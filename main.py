@@ -11,6 +11,7 @@ from flowlauncher import FlowLauncher, FlowLauncherAPI
 import requests, webbrowser
 from urllib.parse import quote_plus
 from typing import Any
+import json
 
 ICO_PATH = "Images/app.png"
 
@@ -38,6 +39,12 @@ class HelloWorld(FlowLauncher):
         https://developer.wordnik.com/docs#!/word/getDefinitions
         """
 
+        debug: bool = self.settings['debug_mode']
+
+        if debug:
+            with open("rpc_data.debug.json", "w") as f:
+                json.dump(self.rpc_request, f, indent=4)
+
         if not query:
             return [self.generate_json(title="Invalid Word Given")]
 
@@ -59,6 +66,11 @@ class HelloWorld(FlowLauncher):
         res = requests.get(url, params=params, headers=headers)
         res.raise_for_status()  # ! get rid of this after testing
         data = res.json()
+
+        if debug:
+            with open("web_request_response.debug.json", "w") as f:
+                json.dump(data, f, indent=4)
+
         final = []
 
         for definition in data:
