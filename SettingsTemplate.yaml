@@ -3,6 +3,7 @@ body:
     attributes:
       name: api_key
       label: Wordnik API Key
+      description: Head to https://developer.wordnik.com to get your API key.
   - type: checkbox
     attributes:
       name: use_canonical

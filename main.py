@@ -117,6 +117,8 @@ class WordnikDictionaryPlugin(FlowLauncher):
         }
         headers = {"Accept": "application/json"}
         res = requests.get(url, params=params, headers=headers)
+        if res.status_code == 401:
+            return [self.generate_json(title="Error: Invalid API Key", sub="Click ENTER for instructions on how to get a valid API key", callback="open_url", params=['https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary?tab=readme-ov-file#get-an-api-key'])]
         res.raise_for_status()
         data = res.json()
 
