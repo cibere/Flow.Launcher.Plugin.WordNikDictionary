@@ -1,0 +1,16 @@
+body:
+  - type: input
+    attributes:
+      name: api_key
+      label: Wordnik API Key
+  - type: checkbox
+    attributes:
+      name: use_canonical
+      label: Use Canonical
+      description: If true will try to return the correct word root ('cats' -> 'cat'). If false returns exactly what was requested.
+      defaultValue: false
+  - type: input
+    attributes:
+      name: results
+      label: Number of results to display
+      defaultValue: 20
