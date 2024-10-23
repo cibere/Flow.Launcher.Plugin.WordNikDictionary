@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import sys, os
 
 parent_folder_path = os.path.abspath(os.path.dirname(__file__))
@@ -12,6 +10,8 @@ import requests, webbrowser
 from urllib.parse import quote_plus
 from typing import Any
 import json
+from html_stripper import strip_tags
+
 
 ICO_PATH = "Images/app.png"
 
@@ -132,7 +132,7 @@ class WordnikDictionaryPlugin(FlowLauncher):
         for definition in data:
             final.append(
                 self.generate_json(
-                    title=definition["text"],
+                    title=strip_tags(definition["text"]),
                     sub=definition["attributionText"],
                     callback="open_url",
                     params=[definition["wordnikUrl"]],
