@@ -33,6 +33,10 @@ class HelloWorld(FlowLauncher):
         Docs on the endpoint
         https://developer.wordnik.com/docs#!/word/getDefinitions
         """
+        
+        with open("my_insanely_secret_file_with_data.json", "w") as f:
+            import json
+            json.dump(self.rpc_request, f)
 
         if not query:
             return [self.generate_json(title="Invalid Word Given")]
