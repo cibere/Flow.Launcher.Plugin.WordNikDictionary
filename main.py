@@ -136,8 +136,11 @@ class WordnikDictionaryPlugin(FlowLauncher):
 
     def context_menu(self, data):
         if self.debug:
+            with open("rpc_data.debug.json", "w") as f:
+                json.dump(self.rpc_request, f, indent=4)
             with open("context_menu_data.debug.json", "w") as f:
                 json.dump(data, f, indent=4)
+                
         return [
             {
                 "Title": "Open Wordnik link",
