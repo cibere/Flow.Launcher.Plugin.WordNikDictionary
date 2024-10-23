@@ -10,14 +10,32 @@ sys.path.append(os.path.join(parent_folder_path, "plugin"))
 from flowlauncher import FlowLauncher
 import requests, webbrowser
 from urllib.parse import quote_plus
+from typing import Any
+
+ICO_PATH = "Images/app.png"
 
 
 class HelloWorld(FlowLauncher):
+    def generate_json(
+        self, *, title: str, sub: str = "", callback: str = "", params: list[str] = []
+    ) -> dict:
+        data: dict[str, Any] = {
+            "Title": title,
+            "SubTitle": sub,
+            "IcoPath": "Images/app.png",
+        }
+        if callback:
+            data["JsonRPCAction"] = {"method": callback, "parameters": params}
+        return data
+
     def query(self, query: str):
         """
         Docs on the endpoint
         https://developer.wordnik.com/docs#!/word/getDefinitions
         """
+
+        if not query:
+            return [self.generate_json(title="Invalid Word Given")]
 
         url = f"https://api.wordnik.com/v4/word.json/{quote_plus(query)}/definitions"
         params = {
@@ -35,15 +53,12 @@ class HelloWorld(FlowLauncher):
 
         for definition in data:
             final.append(
-                {
-                    "Title": definition["text"],
-                    "SubTitle": definition["attributionText"],
-                    "IcoPath": "Images/app.png",
-                    "JsonRPCAction": {
-                        "method": "open_url",
-                        "parameters": [definition["wordnikUrl"]],
-                    },
-                }
+                self.generate_json(
+                    title=definition["text"],
+                    sub=definition["attributionText"],
+                    callback="open_url",
+                    params=[definition["wordnikUrl"]],
+                )
             )
 
         return final
