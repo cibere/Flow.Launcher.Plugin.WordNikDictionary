@@ -1,10 +1,10 @@
 {
-    "ID": "",
-    "ActionKeyword": "d",
+    "ID": "7ed41d7e-3d17-4379-972e-1cdacb647474",
+    "ActionKeyword": "def",
     "Name": "Wordnik Dictionary",
     "Description": "Wordnik wrapper in flow using python. Gives you the definition of words similiar to duckduckgo.",
     "Author": "cibere",
-    "Version": "0.0.a",
+    "Version": "0.0.1",
     "Language": "python",
     "Website": "https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary",
     "IcoPath": "Images\\app.png",
