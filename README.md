@@ -1,3 +1,4 @@
-This is an example Python plugin project which demonstrates the interaction of request from Flow and then call back to the plugin.
+# Flow.Launcher.Plugin.WordNikDictionary 
+This is a plugin for [Flow Launcher](https://github.com/Flow-Launcher/Flow.Launcher) that lets you easily see the definitions of words using [wordnik](https://wordnik.com).
 
-You can install this plugin via `pm install Hello World Python`
+## Get an API Key
