@@ -18,7 +18,7 @@ class HelloWorld(FlowLauncher):
         Docs on the endpoint
         https://developer.wordnik.com/docs#!/word/getDefinitions
         """
-        
+
         url = f"https://api.wordnik.com/v4/word.json/{quote_plus(query)}/definitions"
         params = {
             "limit": 20,
@@ -37,12 +37,12 @@ class HelloWorld(FlowLauncher):
             final.append(
                 {
                     "Title": definition["text"],
-                    "SubTitle": definition['attributionText'],
+                    "SubTitle": definition["attributionText"],
                     "IcoPath": "Images/app.png",
                     "JsonRPCAction": {
                         "method": "open_url",
-                        "parameters": [definition['wordnikUrl']]
-                    }
+                        "parameters": [definition["wordnikUrl"]],
+                    },
                 }
             )
 
