@@ -44,9 +44,9 @@ class HelloWorld(FlowLauncher):
         url = f"https://api.wordnik.com/v4/word.json/{quote_plus(query)}/definitions"
 
         try:
-            limit = int(self.settings['limit'])
+            limit = int(self.settings['results'])
         except ValueError:
-            return [self.generate_json(title="Error: Invalid Limit Value Given.", sub="The Limit settings item must be a valid number.", callback="open_settings_menu")]
+            return [self.generate_json(title="Error: Invalid Results Value Given.", sub="The Results settings item must be a valid number.", callback="open_settings_menu")]
         
         params = {
             "limit": limit,
