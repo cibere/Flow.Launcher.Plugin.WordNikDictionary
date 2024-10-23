@@ -64,12 +64,19 @@ class WordnikDictionaryPlugin(FlowLauncher):
             return True
 
     def generate_json(
-        self, *, title: str, sub: str = "", callback: str = "", params: list[str] = []
+        self,
+        *,
+        title: str,
+        sub: str = "",
+        callback: str = "",
+        params: list[str] = [],
+        context_data: list[Any] = [],
     ) -> dict:
         data: dict[str, Any] = {
             "Title": title,
             "SubTitle": sub,
             "IcoPath": "Images/app.png",
+            "ContextData": context_data,
         }
         if callback:
             data["JsonRPCAction"] = {"method": callback, "parameters": params}
@@ -129,31 +136,32 @@ class WordnikDictionaryPlugin(FlowLauncher):
                     sub=definition["attributionText"],
                     callback="open_url",
                     params=[definition["wordnikUrl"]],
+                    context_data=[
+                        self.generate_json(
+                            title="Open Wordnik URL",
+                            sub=definition["wordnikUrl"],
+                            callback="open_url",
+                            params=[definition["wordnikUrl"]],
+                        ),
+                        self.generate_json(
+                            title="Open Attribution Website",
+                            sub=definition["attributionUrl"],
+                            callback="open_url",
+                            params=[definition["attributionUrl"]],
+                        ),
+                    ],
                 )
             )
 
         return final
 
-    def context_menu(self, data):
+    def context_menu(self, data: list[Any]):
         if self.debug:
             with open("rpc_data.debug.json", "w") as f:
                 json.dump(self.rpc_request, f, indent=4)
             with open("context_menu_data.debug.json", "w") as f:
                 json.dump(data, f, indent=4)
-                
-        return [
-            {
-                "Title": "Open Wordnik link",
-                "SubTitle": "Press enter to open Flow the plugin's repo in GitHub",
-                "IcoPath": "Images/app.png",
-                "JsonRPCAction": {
-                    "method": "open_url",
-                    "parameters": [
-                        "https://github.com/Flow-Launcher/Flow.Launcher.Plugin.WordNikDictionary"
-                    ],
-                },
-            }
-        ]
+        return data
 
     def open_url(self, url):
         webbrowser.open(url)
