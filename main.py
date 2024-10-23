@@ -58,7 +58,10 @@ class WordnikDictionaryPlugin(FlowLauncher):
 
     @property
     def debug(self) -> bool:
-        return self.settings["debug_mode"]
+        try:
+            return self.settings["debug_mode"]
+        except TypeError:
+            return True
 
     def generate_json(
         self, *, title: str, sub: str = "", callback: str = "", params: list[str] = []
