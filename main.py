@@ -7,7 +7,7 @@ sys.path.append(os.path.join(parent_folder_path, 'lib'))
 sys.path.append(os.path.join(parent_folder_path, 'plugin'))
 
 from flowlauncher import FlowLauncher
-import webbrowser
+import requests, webbrowser
 
 
 class HelloWorld(FlowLauncher):
@@ -15,7 +15,7 @@ class HelloWorld(FlowLauncher):
     def query(self, query):
         return [
             {
-                "Title": "Hello World, this is where title goes. {}".format(('Your query is: ' + query , query)[query == '']),
+                "Title": "Hello, this is temperary until I get an API key ;)s",
                 "SubTitle": "This is where your subtitle goes, press enter to open Flow's url",
                 "IcoPath": "Images/app.png",
                 "JsonRPCAction": {
@@ -33,7 +33,7 @@ class HelloWorld(FlowLauncher):
                 "IcoPath": "Images/app.png",
                 "JsonRPCAction": {
                     "method": "open_url",
-                    "parameters": ["https://github.com/Flow-Launcher/Flow.Launcher.Plugin.HelloWorldPython"]
+                    "parameters": ["https://github.com/Flow-Launcher/Flow.Launcher.Plugin.WordNikDictionary"]
                 }
             }
         ]
