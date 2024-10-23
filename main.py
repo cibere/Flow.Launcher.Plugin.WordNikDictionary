@@ -22,7 +22,7 @@ bad_response = [
         "labels": [],
         "notes": [],
         "relatedWords": [],
-        "textProns": []
+        "textProns": [],
     },
     {
         "citations": [],
@@ -30,7 +30,7 @@ bad_response = [
         "labels": [],
         "notes": [],
         "relatedWords": [],
-        "textProns": []
+        "textProns": [],
     },
     {
         "citations": [],
@@ -38,7 +38,7 @@ bad_response = [
         "labels": [],
         "notes": [],
         "relatedWords": [],
-        "textProns": []
+        "textProns": [],
     },
     {
         "citations": [],
@@ -46,15 +46,20 @@ bad_response = [
         "labels": [],
         "notes": [],
         "relatedWords": [],
-        "textProns": []
-    }
+        "textProns": [],
+    },
 ]
 
-class HelloWorld(FlowLauncher):
+
+class WordnikDictionaryPlugin(FlowLauncher):
     @property
     def settings(self) -> dict:
-        return self.rpc_request['settings']
-    
+        return self.rpc_request["settings"]
+
+    @property
+    def debug(self) -> bool:
+        return self.settings["debug_mode"]
+
     def generate_json(
         self, *, title: str, sub: str = "", callback: str = "", params: list[str] = []
     ) -> dict:
@@ -73,9 +78,7 @@ class HelloWorld(FlowLauncher):
         https://developer.wordnik.com/docs#!/word/getDefinitions
         """
 
-        debug: bool = self.settings['debug_mode']
-
-        if debug:
+        if self.debug:
             with open("rpc_data.debug.json", "w") as f:
                 json.dump(self.rpc_request, f, indent=4)
 
@@ -85,16 +88,22 @@ class HelloWorld(FlowLauncher):
         url = f"https://api.wordnik.com/v4/word.json/{quote_plus(query)}/definitions"
 
         try:
-            limit = int(self.settings['results'])
+            limit = int(self.settings["results"])
         except ValueError:
-            return [self.generate_json(title="Error: Invalid Results Value Given.", sub="The Results settings item must be a valid number.", callback="open_settings_menu")]
-        
+            return [
+                self.generate_json(
+                    title="Error: Invalid Results Value Given.",
+                    sub="The Results settings item must be a valid number.",
+                    callback="open_settings_menu",
+                )
+            ]
+
         params = {
             "limit": limit,
             "includeRelated": False,
-            "useCanonical": self.settings['use_canonical'],
+            "useCanonical": self.settings["use_canonical"],
             "includeTags": False,
-            "api_key": self.settings['api_key'],
+            "api_key": self.settings["api_key"],
         }
         headers = {"Accept": "application/json"}
         res = requests.get(url, params=params, headers=headers)
@@ -104,7 +113,7 @@ class HelloWorld(FlowLauncher):
         if data == bad_response:
             return [self.generate_json(title="No Definition was found")]
 
-        if debug:
+        if self.debug:
             with open("web_request_response.debug.json", "w") as f:
                 json.dump(data, f, indent=4)
 
@@ -123,9 +132,12 @@ class HelloWorld(FlowLauncher):
         return final
 
     def context_menu(self, data):
+        if self.debug:
+            with open("context_menu_data.debug.json", "w") as f:
+                json.dump(data, f, indent=4)
         return [
             {
-                "Title": "Hello World Python's Context menu",
+                "Title": "Open Wordnik link",
                 "SubTitle": "Press enter to open Flow the plugin's repo in GitHub",
                 "IcoPath": "Images/app.png",
                 "JsonRPCAction": {
@@ -143,5 +155,6 @@ class HelloWorld(FlowLauncher):
     def open_settings_menu(self):
         FlowLauncherAPI.open_setting_dialog()
 
+
 if __name__ == "__main__":
-    HelloWorld()
+    WordnikDictionaryPlugin()
