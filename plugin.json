@@ -1,5 +1,5 @@
 {
-    "ID": "7ed41d7e-3d17-4379-972e-1cdacb647474",
+    "ID": "7ed41d7e3d174379972e1cdacb647474",
     "ActionKeyword": "def",
     "Name": "Wordnik Dictionary",
     "Description": "Wordnik wrapper in flow using python. Gives you the definition of words similiar to duckduckgo.",
