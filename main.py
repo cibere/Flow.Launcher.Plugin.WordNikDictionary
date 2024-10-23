@@ -15,6 +15,40 @@ import json
 
 ICO_PATH = "Images/app.png"
 
+bad_response = [
+    {
+        "citations": [],
+        "exampleUses": [],
+        "labels": [],
+        "notes": [],
+        "relatedWords": [],
+        "textProns": []
+    },
+    {
+        "citations": [],
+        "exampleUses": [],
+        "labels": [],
+        "notes": [],
+        "relatedWords": [],
+        "textProns": []
+    },
+    {
+        "citations": [],
+        "exampleUses": [],
+        "labels": [],
+        "notes": [],
+        "relatedWords": [],
+        "textProns": []
+    },
+    {
+        "citations": [],
+        "exampleUses": [],
+        "labels": [],
+        "notes": [],
+        "relatedWords": [],
+        "textProns": []
+    }
+]
 
 class HelloWorld(FlowLauncher):
     @property
@@ -64,8 +98,11 @@ class HelloWorld(FlowLauncher):
         }
         headers = {"Accept": "application/json"}
         res = requests.get(url, params=params, headers=headers)
-        res.raise_for_status()  # ! get rid of this after testing
+        res.raise_for_status()
         data = res.json()
+
+        if data == bad_response:
+            return [self.generate_json(title="No Definition was found")]
 
         if debug:
             with open("web_request_response.debug.json", "w") as f:
