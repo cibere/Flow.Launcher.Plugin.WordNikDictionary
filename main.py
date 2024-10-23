@@ -7,7 +7,7 @@ sys.path.append(parent_folder_path)
 sys.path.append(os.path.join(parent_folder_path, "lib"))
 sys.path.append(os.path.join(parent_folder_path, "plugin"))
 
-from flowlauncher import FlowLauncher
+from flowlauncher import FlowLauncher, FlowLauncherAPI
 import requests, webbrowser
 from urllib.parse import quote_plus
 from typing import Any
@@ -16,6 +16,10 @@ ICO_PATH = "Images/app.png"
 
 
 class HelloWorld(FlowLauncher):
+    @property
+    def settings(self) -> dict:
+        return self.rpc_request['settings']
+    
     def generate_json(
         self, *, title: str, sub: str = "", callback: str = "", params: list[str] = []
     ) -> dict:
@@ -33,21 +37,23 @@ class HelloWorld(FlowLauncher):
         Docs on the endpoint
         https://developer.wordnik.com/docs#!/word/getDefinitions
         """
-        
-        with open("my_insanely_secret_file_with_data.json", "w") as f:
-            import json
-            json.dump(self.rpc_request, f)
 
         if not query:
             return [self.generate_json(title="Invalid Word Given")]
 
         url = f"https://api.wordnik.com/v4/word.json/{quote_plus(query)}/definitions"
+
+        try:
+            limit = int(self.settings['limit'])
+        except ValueError:
+            return [self.generate_json(title="Error: Invalid Limit Value Given.", sub="The Limit settings item must be a valid number.", callback="open_settings_menu")]
+        
         params = {
-            "limit": 20,
+            "limit": limit,
             "includeRelated": False,
-            "useCanonical": False,
+            "useCanonical": self.settings['use_canonical'],
             "includeTags": False,
-            "api_key": "c23b746d074135dc9500c0a61300a3cb7647e53ec2b9b658e",
+            "api_key": self.settings['api_key'],
         }
         headers = {"Accept": "application/json"}
         res = requests.get(url, params=params, headers=headers)
@@ -85,6 +91,8 @@ class HelloWorld(FlowLauncher):
     def open_url(self, url):
         webbrowser.open(url)
 
+    def open_settings_menu(self):
+        FlowLauncherAPI.open_setting_dialog()
 
 if __name__ == "__main__":
     HelloWorld()
