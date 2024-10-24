@@ -131,9 +131,9 @@ class WordnikDictionaryPlugin(FlowLauncher):
             if filter_query == "syllables":
                 syllables = self.get_syllables(word)
                 return [Option(title="-".join(syllables))] or [Option.wnf()]
-            if filter_query == "similiar":
+            elif filter_query == "similiar":
                 return self.get_word_relationships(word) or [Option.wnf()]
-            if filter_query.startswith("rel-"):
+            elif filter_query.startswith("rel-"):
                 rel_type = filter_query.removeprefix("rel-")
                 relationships = self.get_word_relationships(word)
                 for relationship in relationships:
@@ -142,9 +142,21 @@ class WordnikDictionaryPlugin(FlowLauncher):
 
         definitions = self.get_definitions(word)
 
-        if filter_query in parts_of_speech:
-            temp = filter_query.replace("-", " ")
-            definitions = filter(lambda d: d.part_of_speech == temp, definitions)
+        if filter_query:
+            if filter_query in parts_of_speech:
+                temp = filter_query.replace("-", " ")
+                definitions = filter(lambda d: d.part_of_speech == temp, definitions)
+            else:
+                return [
+                    Option(
+                        title="Unknown Search Modifier Given",
+                        sub="Press ENTER to open search modifier index",
+                        callback="open_url",
+                        params=[
+                            "https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary/tree/v2?tab=readme-ov-file#search-modifiers"
+                        ],
+                    )
+                ]
 
         return definitions or [Option.wnf()]
 
