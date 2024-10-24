@@ -12,7 +12,7 @@ class Option:
         sub: str = "",
         callback: str | None = None,
         params: list[str] = [],
-        context_data: list[Any] = [],
+        context_data: list[Option] = [],
     ):
         self.title = title
         self.sub = sub
@@ -25,7 +25,7 @@ class Option:
             "Title": self.title,
             "SubTitle": self.sub,
             "IcoPath": "Images/app.png",
-            "ContextData": self.context_data,
+            "ContextData": [opt.to_jsonrpc() for opt in self.context_data],
         }
         if self.callback:
             data["JsonRPCAction"] = {"method": self.callback, "parameters": self.params}
@@ -34,3 +34,7 @@ class Option:
     @classmethod
     def url(cls: type[Option], name: str, url: str) -> Option:
         return Option(title=f"Open {name}", sub=url, callback="open_url", params=[url])
+
+    @classmethod
+    def wnf(cls: type[Option]) -> Option:
+        return cls(title="Word not found")

@@ -7,5 +7,5 @@ sys.path.append(os.path.join(parent_folder_path, "plugin"))
 
 from WordnikDictionary.core import WordnikDictionaryPlugin
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     WordnikDictionaryPlugin()

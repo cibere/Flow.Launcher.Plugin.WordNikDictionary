@@ -24,3 +24,8 @@ class PluginException(Exception):
             kwargs["params"] = [url]
 
         return cls(text, [Option(title=text, sub=sub, **kwargs)])
+
+    @classmethod
+    def wnf(cls: type[PluginException]) -> PluginException:
+        opt = Option.wnf()
+        return cls(opt.title, [opt])

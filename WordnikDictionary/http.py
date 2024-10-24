@@ -3,50 +3,14 @@ from typing import TYPE_CHECKING
 import requests
 from urllib.parse import quote_plus
 from typing import Any
-import json
-from WordnikDictionary.definition import Definition
 from .errors import PluginException
 from .options import Option
+from .utils import dump_debug
 
 if TYPE_CHECKING:
     from .core import WordnikDictionaryPlugin
 
 ICO_PATH = "Images/app.png"
-
-bad_response = [
-    {
-        "citations": [],
-        "exampleUses": [],
-        "labels": [],
-        "notes": [],
-        "relatedWords": [],
-        "textProns": [],
-    },
-    {
-        "citations": [],
-        "exampleUses": [],
-        "labels": [],
-        "notes": [],
-        "relatedWords": [],
-        "textProns": [],
-    },
-    {
-        "citations": [],
-        "exampleUses": [],
-        "labels": [],
-        "notes": [],
-        "relatedWords": [],
-        "textProns": [],
-    },
-    {
-        "citations": [],
-        "exampleUses": [],
-        "labels": [],
-        "notes": [],
-        "relatedWords": [],
-        "textProns": [],
-    },
-]
 
 
 class HTTPClient:
@@ -93,16 +57,14 @@ class HTTPClient:
                 ],
             )
             raise PluginException(opt.title, [opt])
+        elif res.status_code == 404:
+            raise PluginException.wnf()
 
         res.raise_for_status()
         data = res.json()
 
-        if data == bad_response:
-            raise PluginException.create("No definition was found")
-
         if self.debug:
-            with open("web_request_response.debug.json", "w") as f:
-                json.dump(data, f, indent=4)
+            dump_debug("web_request_response", data)
         return data
 
     def fetch_definitions(self, word: str) -> list[dict[str, Any]]:
@@ -128,5 +90,43 @@ class HTTPClient:
             "includeTags": False,
         }
         endpoint = f"/word.json/{quote_plus(word)}/definitions"
+
+        return self.request("GET", endpoint, params=params)
+
+    def fetch_syllables(self, word: str) -> list[dict[str, Any]]:
+        """
+        Docs on the endpoint
+        https://developer.wordnik.com/docs#!/word/getHyphenation
+        """
+
+        params = {
+            "limit": 50,
+            "useCanonical": self.settings["use_canonical"],
+        }
+        endpoint = f"/word.json/{quote_plus(word)}/hyphenation"
+
+        return self.request("GET", endpoint, params=params)
+
+    def fetch_similiar_words(self, word: str) -> list[dict[str, Any]]:
+        """
+        Docs on the endpoint
+        https://developer.wordnik.com/docs#!/word/getRelatedWords
+        """
+
+        try:
+            limit = int(self.settings["results"])
+        except ValueError:
+            opt = Option(
+                title="Error: Invalid Results Value Given.",
+                sub="The Results settings item must be a valid number.",
+                callback="open_settings_menu",
+            )
+            raise PluginException(opt.title, [opt])
+
+        params = {
+            "limit": limit,
+            "useCanonical": self.settings["use_canonical"],
+        }
+        endpoint = f"/word.json/{quote_plus(word)}/relatedWords"
 
         return self.request("GET", endpoint, params=params)
