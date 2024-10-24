@@ -1,8 +1,10 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
-import requests
+
+from typing import TYPE_CHECKING, Any
 from urllib.parse import quote_plus
-from typing import Any
+
+import requests
+
 from .errors import PluginException
 from .options import Option
 from .utils import dump_debug

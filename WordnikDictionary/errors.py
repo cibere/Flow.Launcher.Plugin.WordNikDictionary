@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from .options import Option
 
 __all__ = ("PluginException",)

@@ -2,8 +2,8 @@
 Source: https://stackoverflow.com/questions/753052/strip-html-from-strings-in-python
 """
 
-from io import StringIO
 from html.parser import HTMLParser
+from io import StringIO
 
 
 class MLStripper(HTMLParser):

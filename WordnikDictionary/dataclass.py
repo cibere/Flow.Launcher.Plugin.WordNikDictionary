@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from typing import Self
+
 from .options import Option
 
 __all__ = ("Dataclass",)

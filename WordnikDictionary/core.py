@@ -1,11 +1,13 @@
-from flowlauncher import FlowLauncher, FlowLauncherAPI
+import re
 import webbrowser
 from typing import Any
+
+from flowlauncher import FlowLauncher, FlowLauncherAPI
+
 from .definition import Definition
 from .http import HTTPClient
-from .utils import handle_plugin_exception, dump_debug, convert_options
-import re
 from .options import Option
+from .utils import convert_options, dump_debug, handle_plugin_exception
 from .word_relationship import WordRelationship
 
 QUERY_REGEX = re.compile(r"^(?P<word>[a-zA-Z]+)(!(?P<filter>[a-zA-Z-]+))?$")

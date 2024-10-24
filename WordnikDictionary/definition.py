@@ -1,8 +1,9 @@
 from __future__ import annotations
-from .options import Option
-from .html_stripper import strip_tags
+
 from .attributions import Attribution
 from .dataclass import Dataclass
+from .html_stripper import strip_tags
+from .options import Option
 
 __all__ = ("Definition",)
 
