@@ -4,7 +4,7 @@
     "Name": "Wordnik Dictionary",
     "Description": "Wordnik wrapper using python for Flow Launcher. Gives you the definition of words similiar to duckduckgo.",
     "Author": "cibere",
-    "Version": "1.0.0",
+    "Version": "2.0.0",
     "Language": "python",
     "Website": "https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary",
     "IcoPath": "Images\\app.png",
