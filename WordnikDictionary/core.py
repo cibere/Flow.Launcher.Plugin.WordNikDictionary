@@ -92,7 +92,7 @@ class WordnikDictionaryPlugin(FlowLauncher):
             item = UrbanDefinition.from_json(word, data)
             if item:
                 final.append(item)
-        return final
+        return sorted(final, key=lambda i: i.upvotes-i.downvotes, reverse=True)
 
     @handle_plugin_exception
     @convert_options
