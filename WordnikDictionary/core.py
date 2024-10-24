@@ -1,5 +1,7 @@
+import inspect
 import json
 import re
+import sys
 import webbrowser
 from typing import Any
 
@@ -39,15 +41,39 @@ parts_of_speech = [
     "proper-noun-plural",
     "proper-noun-posessive",
     "suffix",
-    "verb-intransitive",
-    "verb-transitive",
+    "intransitive-verb",
+    "transitive-verb",
 ]
 
 
 class WordnikDictionaryPlugin(FlowLauncher):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, args: str | None = None):
         self.http = HTTPClient(self)
-        super().__init__(*args, **kwargs)
+
+        # defalut jsonrpc
+        self.rpc_request = {"method": "query", "parameters": [""]}
+        self.debugMessage = ""
+
+        if args is None and len(sys.argv) > 1:
+
+            # Gets JSON-RPC from Flow Launcher process.
+            self.rpc_request = json.loads(sys.argv[1])
+
+        # proxy is not working now
+        # self.proxy = self.rpc_request.get("proxy", {})
+
+        request_method_name = self.rpc_request.get("method", "query")
+        request_parameters = self.rpc_request.get("parameters", [])
+
+        methods = inspect.getmembers(self, predicate=inspect.ismethod)
+        request_method = dict(methods)[request_method_name]
+        results = request_method(*request_parameters)
+
+        if request_method_name in ("query", "context_menu"):
+            data = {"result": results, "debugMessage": self.debugMessage}
+            if self.debug:
+                dump_debug("rpc_json_to_send_data", data)
+            print(json.dumps(data))
 
     @property
     def settings(self) -> dict:
