@@ -23,7 +23,7 @@ class Definition(Dataclass):
 
         self.part_of_speech = part_of_speech
         if part_of_speech:
-            self.part_of_speech = part_of_speech.strip(r"!@#$%^&*()-=_+[]{}\|';:\"/.,?><`~ \n   ")
+            self.part_of_speech = part_of_speech.strip(r"!@#$%^&*()-=_+[]{}\|';:\"/.,?><`~    ")
 
     @classmethod
     def from_json(cls: type[Definition], _: str, data: dict) -> Definition | None:
@@ -40,7 +40,7 @@ class Definition(Dataclass):
     def _generate_base_option(self) -> Option:
         return Option(
             title=self.text,
-            sub=self.attribution.text,
+            sub=f"{self.part_of_speech}; {self.attribution.text}" if self.part_of_speech else self.attribution.text,
             callback="open_url",
             params=[self.wordnik_url],
         )
