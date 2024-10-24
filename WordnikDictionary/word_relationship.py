@@ -20,9 +20,15 @@ class WordRelationship(Dataclass):
         return cls(word, data["relationshipType"], data["words"])
 
     def _generate_base_option(self) -> Option:
-        return Option(title=self.type, sub=", ".join(self.words[:5]), callback="change_query", params=[f'def {self.word}!rel-{self.type}'])
+        return Option(
+            title=self.type,
+            sub=", ".join(self.words[:5]),
+            callback="change_query",
+            params=[f"def {self.word}!rel-{self.type}"],
+        )
 
     def get_word_options(self) -> list[Option]:
         return [
-            Option(title=word, callback="change_query", params=[f'def {word}']) for word in self.words
+            Option(title=word, callback="change_query", params=[f"def {word}"])
+            for word in self.words
         ]

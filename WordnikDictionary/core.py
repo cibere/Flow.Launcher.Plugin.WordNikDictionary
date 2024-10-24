@@ -90,7 +90,7 @@ class WordnikDictionaryPlugin(FlowLauncher):
 
         if not query.strip():
             return [Option.wnf()]
-        
+
         word = query
         filter_query = None
         matches = QUERY_REGEX.match(query)
@@ -114,10 +114,8 @@ class WordnikDictionaryPlugin(FlowLauncher):
         definitions = self.get_definitions(word)
 
         if filter_query in parts_of_speech:
-            temp = filter_query.replace("-"," ")
-            definitions = filter(
-                lambda d: d.part_of_speech == temp, definitions
-            )
+            temp = filter_query.replace("-", " ")
+            definitions = filter(lambda d: d.part_of_speech == temp, definitions)
 
         return definitions or [Option.wnf()]
 
