@@ -132,3 +132,9 @@ class HTTPClient:
         endpoint = f"/word.json/{quote_plus(word)}/relatedWords"
 
         return self.request("GET", endpoint, params=params)
+
+    def fetch_urban_definition(self, word: str) -> list[dict]:
+        url = "http://api.urbandictionary.com/v0/define"
+        res = requests.get(url, params={"term": word})
+        data = res.json()
+        return data["list"]

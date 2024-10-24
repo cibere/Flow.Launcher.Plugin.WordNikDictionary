@@ -7,10 +7,11 @@ from flowlauncher import FlowLauncher, FlowLauncherAPI
 from .definition import Definition
 from .http import HTTPClient
 from .options import Option
+from .urban import UrbanDefinition
 from .utils import convert_options, dump_debug, handle_plugin_exception
 from .word_relationship import WordRelationship
 
-QUERY_REGEX = re.compile(r"^(?P<word>[a-zA-Z]+)(!(?P<filter>[a-zA-Z-]+))?$")
+QUERY_REGEX = re.compile(r"^(?P<word>[a-zA-Z\s]+)(!(?P<filter>[a-zA-Z-]+))?$")
 
 parts_of_speech = [
     "noun",
@@ -84,6 +85,15 @@ class WordnikDictionaryPlugin(FlowLauncher):
                 final.append(item)
         return final
 
+    def get_urban_definitions(self, word: str) -> list[UrbanDefinition]:
+        raw = self.http.fetch_urban_definition(word)
+        final = []
+        for data in raw:
+            item = UrbanDefinition.from_json(word, data)
+            if item:
+                final.append(item)
+        return final
+
     @handle_plugin_exception
     @convert_options
     def query(self, query: str):
@@ -112,6 +122,8 @@ class WordnikDictionaryPlugin(FlowLauncher):
                 for relationship in relationships:
                     if relationship.type == rel_type:
                         return relationship.get_word_options() or [Option.wnf()]
+            if filter_query == "urban":
+                return self.get_urban_definitions(word) or [Option.wnf()]
 
         definitions = self.get_definitions(word)
 
@@ -136,3 +148,6 @@ class WordnikDictionaryPlugin(FlowLauncher):
 
     def change_query(self, query: str):
         FlowLauncherAPI.change_query(query)
+
+    def show_msg(self, title: str, sub: str):
+        FlowLauncherAPI.show_msg(title, sub)
