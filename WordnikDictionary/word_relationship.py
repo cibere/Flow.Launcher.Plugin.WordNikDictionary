@@ -24,10 +24,16 @@ class WordRelationship(Dataclass):
             sub=", ".join(self.words[:5]),
             callback="change_query",
             params=[f"def {self.word}!rel-{self.type}"],
+            hide_after_callback=False,
         )
 
     def get_word_options(self) -> list[Option]:
         return [
-            Option(title=word, callback="change_query", params=[f"def {word}"])
+            Option(
+                title=word,
+                callback="change_query",
+                params=[f"def {word}"],
+                hide_after_callback=False,
+            )
             for word in self.words
         ]

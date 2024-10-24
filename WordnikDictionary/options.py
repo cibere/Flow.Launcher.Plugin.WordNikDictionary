@@ -12,14 +12,16 @@ class Option:
         title: str,
         sub: str = "",
         callback: str | None = None,
-        params: list[str] = [],
+        params: list[Any] = [],
         context_data: list[Option] = [],
+        hide_after_callback: bool = True,
     ):
         self.title = title
         self.sub = sub
         self.callback = callback
         self.params = params
         self.context_data = context_data
+        self.hide_after_callback = hide_after_callback
 
     def to_jsonrpc(self) -> dict:
         data: dict[str, Any] = {
@@ -29,7 +31,11 @@ class Option:
             "ContextData": [opt.to_jsonrpc() for opt in self.context_data],
         }
         if self.callback:
-            data["JsonRPCAction"] = {"method": self.callback, "parameters": self.params}
+            data["JsonRPCAction"] = {
+                "method": self.callback,
+                "parameters": self.params,
+                "dontHideAfterAction": not self.hide_after_callback,
+            }
         return data
 
     @classmethod
