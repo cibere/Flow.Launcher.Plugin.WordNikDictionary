@@ -32,10 +32,14 @@ class Definition(Dataclass):
     def from_json(cls: type[Definition], _: str, data: dict) -> Definition | None:
         if data.get("text") is None:
             return None
+        if isinstance(data["text"], list):
+            text = ", ".join(data["text"])
+        else:
+            text = data["text"]
         return cls(
             data.get("partOfSpeech"),
             Attribution.from_json(data),
-            data["text"],
+            text,
             data["wordnikUrl"],
             data["word"],
         )
