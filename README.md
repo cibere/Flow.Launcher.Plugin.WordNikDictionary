@@ -6,6 +6,17 @@ To get an API key, head to [developer.wordnik.com](https://developer.wordnik.com
 
 ## Features
 
+### Feature List
+1. [Get the definition of a word](#get-the-definition-of-a-word)
+2. [Get information about definition of a word](#get-information-about-definition-of-a-word)
+3. [Search Modifiers](#search-modifiers)
+    - [Filter by parts of speech](#filter-by-parts-of-speech)
+    - [Get the syllables of a word](#get-the-syllables-of-a-word)
+    - [Get similiar word by category](#get-similiar-word-by-category)
+4. [Advanced Error Handler](#advanced-error-handler)
+    - [Expected Errors](#expected-errors)
+    - [Unexpected Errors](#unexpected-errors)
+
 ### Get the definition of a word
 Get a list of definitions for your word from various sources. Syntax: `def word`
 ![Example showing the result of the search `def vague`](Images/get_definition_example.png)
@@ -31,3 +42,13 @@ To find the categories of avalible similiar words for a given word, use the foll
 #### Get similiar word by category
 To find all of the words that are similiar to a word in a specific category, use the following command: `def word!rel-category`. For a list of avalible categories for a given word, see the above section.
 ![](Images/find_similiar_words_by_category_example.png)
+
+### Advanced Error Handler
+
+#### Expected Errors
+Expected errors will return a short, simple, and stylish error message.
+![](Images/word_not_found_example.png)
+![](Images/invalid_api_key_example.png)
+#### Unexpected Errors
+When unexpected errors occur, our error handler redirects it to the logs and prompts you to notify us by creating a github issue or discord thread with the logfile.
+![](Images/unexpected_error_handler_showcase.mp4)
