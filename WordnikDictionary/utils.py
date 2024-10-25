@@ -1,12 +1,12 @@
-import json
-import os
+import logging
+import logging.handlers
 from typing import Any, Callable
 
 from .dataclass import Dataclass
 from .errors import PluginException
 from .options import Option
 
-__all__ = ("handle_plugin_exception", "dump_debug", "convert_options")
+__all__ = ("handle_plugin_exception", "convert_options", "setup_logging")
 
 
 def handle_plugin_exception(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -38,9 +38,16 @@ def convert_options(func: Callable[..., Any]) -> Callable[..., Any]:
     return inner
 
 
-def dump_debug(name: str, data: dict | list) -> None:
-    if not os.path.isdir("debug"):
-        os.mkdir("debug")
+def setup_logging() -> None:
+    level = logging.DEBUG
+    handler = logging.handlers.RotatingFileHandler("wordnik.logs", maxBytes=1000000)
+    
+    dt_fmt = "%Y-%m-%d %H:%M:%S"
+    formatter = logging.Formatter(
+        "[{asctime}] [{levelname:<8}] {name}: {message}", dt_fmt, style="{"
+    )
 
-    with open(f"debug/{name}.json", "w") as f:
-        json.dump(data, f, indent=4)
+    logger = logging.getLogger()
+    handler.setFormatter(formatter)
+    logger.setLevel(level)
+    logger.addHandler(handler)

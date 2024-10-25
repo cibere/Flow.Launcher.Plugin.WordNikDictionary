@@ -7,6 +7,8 @@ sys.path.append(os.path.join(parent_folder_path, "lib"))
 sys.path.append(os.path.join(parent_folder_path, "plugin"))
 
 from WordnikDictionary.core import WordnikDictionaryPlugin
+from WordnikDictionary.utils import setup_logging
 
 if __name__ == "__main__":
+    setup_logging()
     WordnikDictionaryPlugin()

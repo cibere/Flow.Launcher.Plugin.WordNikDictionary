@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from logging import getLogger
 from typing import TYPE_CHECKING, Any
 from urllib.parse import quote_plus
 
@@ -7,8 +8,8 @@ import requests
 
 from .errors import PluginException
 from .options import Option
-from .utils import dump_debug
 
+LOG = getLogger(__name__)
 if TYPE_CHECKING:
     from .core import WordnikDictionaryPlugin
 
@@ -48,7 +49,12 @@ class HTTPClient:
         headers["Accept"] = "application/json"
         params["api_key"] = self.settings["api_key"]
         url = f"https://api.wordnik.com/v4{endpoint}"
+        LOG.debug(f"Sending HTTP request. {url=}, {params=}, {headers=}, {kwargs=}")
         res = requests.request(method, url, params=params, headers=headers, **kwargs)
+        data = res.json()
+        LOG.debug(
+            f"Received HTTP response. {res.status_code=}, {res.headers=}, {data=}"
+        )
         if res.status_code == 401:
             opt = Option(
                 title="Invalid API Key",
@@ -63,10 +69,7 @@ class HTTPClient:
             raise PluginException.wnf()
 
         res.raise_for_status()
-        data = res.json()
 
-        if self.debug:
-            dump_debug("web_request_response", data)
         return data
 
     def fetch_definitions(self, word: str) -> list[dict[str, Any]]:

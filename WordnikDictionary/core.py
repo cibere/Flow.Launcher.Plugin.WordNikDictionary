@@ -3,16 +3,19 @@ import json
 import re
 import sys
 import webbrowser
+from logging import getLogger
 from typing import Any
 
 from flowlauncher import FlowLauncher, FlowLauncherAPI
 
 from .definition import Definition
+from .errors import InternalException
 from .http import HTTPClient
 from .options import Option
-from .utils import convert_options, dump_debug, handle_plugin_exception
+from .utils import convert_options, handle_plugin_exception
 from .word_relationship import WordRelationship
 
+LOG = getLogger(__name__)
 QUERY_REGEX = re.compile(r"^(?P<word>[a-zA-Z]+)(!(?P<filter>[a-zA-Z-]+))?$")
 
 parts_of_speech = [
@@ -58,6 +61,7 @@ class WordnikDictionaryPlugin(FlowLauncher):
 
             # Gets JSON-RPC from Flow Launcher process.
             self.rpc_request = json.loads(sys.argv[1])
+        LOG.debug(f"Received RPC request: {json.dumps(self.rpc_request)}")
 
         # proxy is not working now
         # self.proxy = self.rpc_request.get("proxy", {})
@@ -71,20 +75,22 @@ class WordnikDictionaryPlugin(FlowLauncher):
 
         if request_method_name in ("query", "context_menu"):
             data = {"result": results, "debugMessage": self.debugMessage}
-            if self.debug:
-                dump_debug("rpc_json_to_send_data", data)
-            print(json.dumps(data))
+
+            try:
+                payload = json.dumps(data)
+            except TypeError as e:
+                LOG.error(
+                    f"Error occured while trying to convert payload for flow through json.dumps. Data: {data!r}",
+                    exc_info=e,
+                )
+                raise InternalException() from e
+            else:
+                LOG.debug(f"Sending data to flow: {payload}")
+                print(payload)
 
     @property
     def settings(self) -> dict:
         return self.rpc_request["settings"]
-
-    @property
-    def debug(self) -> bool:
-        try:
-            return self.settings["debug_mode"]
-        except TypeError:
-            return True
 
     def get_definitions(self, word: str) -> list[Definition]:
         raw = self.http.fetch_definitions(word)
@@ -114,8 +120,7 @@ class WordnikDictionaryPlugin(FlowLauncher):
     @handle_plugin_exception
     @convert_options
     def query(self, query: str):
-        if self.debug:
-            dump_debug("rpc_data", self.rpc_request)
+        LOG.info(f"Received query: {query!r}")
 
         if not query.strip():
             return [Option.wnf()]
@@ -126,6 +131,7 @@ class WordnikDictionaryPlugin(FlowLauncher):
         if matches:
             word = matches["word"]
             filter_query = matches.group("filter")
+            LOG.info(f"Match found. {word=}, {filter_query=}")
 
         if filter_query:
             if filter_query == "syllables":
@@ -162,9 +168,7 @@ class WordnikDictionaryPlugin(FlowLauncher):
 
     @handle_plugin_exception
     def context_menu(self, data: list[Any]):
-        if self.debug:
-            dump_debug("rpc_data", self.rpc_request)
-            dump_debug("context_menu_data", data)
+        LOG.debug(f"Context menu received: {data=}")
         return data
 
     def open_url(self, url):

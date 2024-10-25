@@ -15,9 +15,3 @@ body:
       name: results
       label: Number of results to display
       defaultValue: 20
-  - type: checkbox
-    attributes:
-      name: debug_mode
-      label: Debug Mode
-      description: If checked, data will be written to temp files for review in the case of an error.
-      defaultValue: false
