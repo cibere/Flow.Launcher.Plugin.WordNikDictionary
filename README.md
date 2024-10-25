@@ -51,4 +51,4 @@ Expected errors will return a short, simple, and stylish error message.
 ![](Images/invalid_api_key_example.png)
 #### Unexpected Errors
 When unexpected errors occur, our error handler redirects it to the logs and prompts you to notify us by creating a github issue or discord thread with the logfile.
-![](Images/unexpected_error_handler_showcase.mp4)
+https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary/raw/refs/heads/v2/Images/unexpected_error_handler_showcase.mp4
