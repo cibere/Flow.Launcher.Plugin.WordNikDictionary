@@ -15,20 +15,33 @@ class Option:
         params: list[Any] = [],
         context_data: list[Option] = [],
         hide_after_callback: bool = True,
+        score: int = 0,
+        icon: str = "app"
     ):
         self.title = title
+        self.icon_name = icon
         self.sub = sub
         self.callback = callback
         self.params = params
+        self.score = score
         self.context_data = context_data
         self.hide_after_callback = hide_after_callback
+
+    @property
+    def icon(self) -> str:
+        return f"Images/{self.icon_name}.png"
+    
+    @icon.setter
+    def icon(self, name: str) -> None:
+        self.icon_name = name
 
     def to_jsonrpc(self) -> dict:
         data: dict[str, Any] = {
             "Title": self.title,
             "SubTitle": self.sub,
-            "IcoPath": "Images/app.png",
+            "IcoPath": self.icon,
             "ContextData": [opt.to_jsonrpc() for opt in self.context_data],
+            "score": self.score
         }
         if self.callback:
             data["JsonRPCAction"] = {
@@ -44,4 +57,4 @@ class Option:
 
     @classmethod
     def wnf(cls: type[Option]) -> Option:
-        return cls(title="Word not found")
+        return cls(title="Word not found", icon="error")
