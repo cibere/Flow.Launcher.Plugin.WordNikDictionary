@@ -2,16 +2,18 @@ from __future__ import annotations
 
 from .options import Option
 
-__all__ = ("PluginException",)
+__all__ = ("PluginException","InternalException")
 
-
-class PluginException(Exception):
+class BaseException(Exception):
     options: list[Option]
 
     def __init__(self, text: str, options: list[Option]) -> None:
         super().__init__(text)
         self.options = options
+        for opt in options:
+            opt.icon = "error"
 
+class PluginException(BaseException):
     @classmethod
     def create(
         cls: type[PluginException],
@@ -30,3 +32,14 @@ class PluginException(Exception):
     def wnf(cls: type[PluginException]) -> PluginException:
         opt = Option.wnf()
         return cls(opt.title, [opt])
+
+
+class InternalException(BaseException):
+    def __init__(self) -> None:
+        opts=  [
+            Option(score=100, icon="error", title="An internal error has occured."),
+            Option(score=80, icon="github", title="Please open a github issue", sub="Click this to open github repository", callback="open_url", params=["https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary"]),
+            Option(score=79, icon="discord", title="Or create a thread in our discord server", sub='Click on this to open discord invite', callback="open_url", params=['https://discord.gg/y4STfDvc8j']),
+            Option(score=0, icon="log_file", title="And provide your log file (wordnik.log)", sub="Click on this to open plugin folder.", callback="open_log_file_folder")
+        ]
+        super().__init__("An Interal Error has occured.", opts)
