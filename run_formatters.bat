@@ -1,3 +1,3 @@
 @echo OFF
-isort .
-black .
+isort WordnikDictionary
+black WordnikDictionary --exclude "all_words.py"
