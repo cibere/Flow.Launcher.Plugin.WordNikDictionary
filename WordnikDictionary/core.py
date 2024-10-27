@@ -205,7 +205,7 @@ class WordnikDictionaryPlugin:
                         sub="Press ENTER to open search modifier index",
                         callback="open_url",
                         params=[
-                            "https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary/tree/v2?tab=readme-ov-file#search-modifiers"
+                            "https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary?tab=readme-ov-file#search-modifiers"
                         ],
                     )
                 ]
