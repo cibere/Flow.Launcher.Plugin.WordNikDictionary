@@ -42,5 +42,6 @@ jobs:
         with:
           files: 'Flow.Launcher.Plugin.WordNikDictionary.zip'
           tag_name: "v${{steps.version.outputs.prop}}"
+          body_path: ${{ github.workspace }}-CHANGELOG.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
