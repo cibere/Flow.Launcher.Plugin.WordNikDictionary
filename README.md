@@ -3,10 +3,10 @@ This is a plugin for [Flow Launcher](https://github.com/Flow-Launcher/Flow.Launc
 
 ## Table of Contents
 1. [Get an API Key](#get-an-api-key)
-2. [Installation](#installation)
+2. Installation
     - [Install via Package Manager](#install-via-package-manager)
     - [Manual Installation](#manual-installation)
-        - [Download from release](#download-from-a-release)
+        - [Install from a previous release](#install-from-a-previous-release)
         - [Download and build development version](#download-and-build-development-version)
 3. [Features](#features)
     - [Feature List](#feature-list)
@@ -14,15 +14,14 @@ This is a plugin for [Flow Launcher](https://github.com/Flow-Launcher/Flow.Launc
 ## Get an API Key
 To get an API key, head to [developer.wordnik.com](https://developer.wordnik.com/), and create an account. Once you've created your account, you'll be able to fill out a form to request an api key.
 
-## Installation
-### Install via Package Manager
+## Install via Package Manager
 
 To Install Wordnik Dictionary through Flow's Plugin Manager, run the following command: `pm install wordnik dictionary`.
 
-### Manual Installation
+## Manual Installation
 > [!WARNING]
 > This method is not recommended, only do this if you know what your doing.
-#### Download from a release
+### Install from a previous release
 
 1. Download the zipped release file.
 
@@ -36,7 +35,7 @@ You can access your userdata folder through the `Flow Launcher UserData Folder` 
 
 Finally you want to restart flow launcher. You can do this via the `Restart Flow Launcher` command in the system commands plugin.
 
-#### Download and build development version
+### Download and build development version
 
 1. Head to your plugins folder.
 
