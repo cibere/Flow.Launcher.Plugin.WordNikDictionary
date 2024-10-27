@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 from .dataclass import Dataclass
 from .options import Option
 

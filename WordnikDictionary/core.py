@@ -1,6 +1,7 @@
 import inspect
 import json
-import re, os
+import os
+import re
 import sys
 import webbrowser
 from logging import getLogger
@@ -181,4 +182,4 @@ class WordnikDictionaryPlugin(FlowLauncher):
         FlowLauncherAPI.change_query(query)
 
     def open_log_file_folder(self):
-        os.system(f"explorer.exe /select, \"wordnik.logs\"")
+        os.system(f'explorer.exe /select, "wordnik.logs"')

@@ -16,7 +16,7 @@ class Option:
         context_data: list[Option] = [],
         hide_after_callback: bool = True,
         score: int = 0,
-        icon: str = "app"
+        icon: str = "app",
     ):
         self.title = title
         self.icon_name = icon
@@ -30,7 +30,7 @@ class Option:
     @property
     def icon(self) -> str:
         return f"Images/{self.icon_name}.png"
-    
+
     @icon.setter
     def icon(self, name: str) -> None:
         self.icon_name = name
@@ -41,7 +41,7 @@ class Option:
             "SubTitle": self.sub,
             "IcoPath": self.icon,
             "ContextData": [opt.to_jsonrpc() for opt in self.context_data],
-            "score": self.score
+            "score": self.score,
         }
         if self.callback:
             data["JsonRPCAction"] = {

@@ -45,7 +45,7 @@ def convert_options(func: Callable[..., Any]) -> Callable[..., Any]:
 def setup_logging() -> None:
     level = logging.DEBUG
     handler = logging.handlers.RotatingFileHandler("wordnik.logs", maxBytes=1000000)
-    
+
     dt_fmt = "%Y-%m-%d %H:%M:%S"
     formatter = logging.Formatter(
         "[{asctime}] [{levelname:<8}] {name}: {message}", dt_fmt, style="{"
