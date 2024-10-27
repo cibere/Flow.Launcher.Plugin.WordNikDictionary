@@ -1,8 +1,57 @@
 # Flow.Launcher.Plugin.WordNikDictionary
 This is a plugin for [Flow Launcher](https://github.com/Flow-Launcher/Flow.Launcher) that lets you easily see the definitions of words using [wordnik](https://wordnik.com).
 
+## Table of Contents
+1. [Get an API Key](#get-an-api-key)
+2. [Installation](#installation)
+    - [Install via Package Manager](#install-via-package-manager)
+    - [Manual Installation](#manual-installation)
+        - [Download from release](#download-from-a-release)
+        - [Download development version](#download-development-version)
+3. [Features](#features)
+    - [Feature List](#feature-list)
+
 ## Get an API Key
 To get an API key, head to [developer.wordnik.com](https://developer.wordnik.com/), and create an account. Once you've created your account, you'll be able to fill out a form to request an api key.
+
+## Installation
+### Install via Package Manager
+
+To Install Wordnik Dictionary through Flow's Plugin Manager, run the following command: `pm install wordnik dictionary`.
+
+### Manual Installation
+This method is not recommended, only do this if you know what your doing.
+#### Download from a release
+
+1. Download the zipped release file.
+
+To download a previously released version, head to the [releases page](https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary/releases), find the version you want, and download the zip file.
+2. Extract the zip file into your plugins folder.
+
+You can access your userdata folder through the `Flow Launcher UserData Folder` command in the system commands plugin, from there go into the `Plugins` folder, and create a new folder for your release. Extract the contents of the zip folder into the new folder you've made.
+
+3. Restart Flow Launcher
+
+Finally you want to restart flow launcher. You can do this via the `Restart Flow Launcher` command in the system commands plugin.
+
+#### Download development version
+
+1. Head to your plugins folder.
+
+You can access your userdata folder through the `Flow Launcher UserData Folder` command in the system commands plugin, from there go into the `Plugins` folder.
+
+2. Clone the repository.
+
+Now you must clone the repository, which can be done with the following command: `git clone cibere/Flow.Launcher.Plugin.WordNikDictionary` (assuming git is installed).
+
+3. Setup your environment
+
+Head into the newly created folder containing the plugin, and create and activate a venv. Then run the `install_packages.bat` file from that console. That file will update pip, install the runtime libraries, and install the development libraries.
+
+4. Restart Flow Launcher
+
+Finally you want to restart flow launcher. You can do this via the `Restart Flow Launcher` command in the system commands plugin.
+
 
 ## Features
 
