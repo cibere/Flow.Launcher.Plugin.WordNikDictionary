@@ -1,0 +1,4 @@
+flowlauncher
+requests
+black
+isort
