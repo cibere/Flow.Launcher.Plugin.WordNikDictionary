@@ -13,7 +13,8 @@ To get an API key, head to [developer.wordnik.com](https://developer.wordnik.com
     - [Filter by parts of speech](#filter-by-parts-of-speech)
     - [Get the syllables of a word](#get-the-syllables-of-a-word)
     - [Get similiar word by category](#get-similiar-word-by-category)
-4. [Advanced Error Handler](#advanced-error-handler)
+4. [Autocomplete Miss-spelled Words](#autocomplete-miss-spelled-words)
+5. [Advanced Error Handler](#advanced-error-handler)
     - [Expected Errors](#expected-errors)
     - [Unexpected Errors](#unexpected-errors)
 
@@ -42,6 +43,10 @@ To find the categories of avalible similiar words for a given word, use the foll
 #### Get similiar word by category
 To find all of the words that are similiar to a word in a specific category, use the following command: `def word!rel-category`. For a list of avalible categories for a given word, see the above section.
 ![](Images/find_similiar_words_by_category_example.png)
+
+### Autocomplete Miss-spelled Words
+If you misspell a word, wordnik dictionary uses a list of over 370 thousand words to try and figure out what you were trying to spell, and ranks them by how certain it is.
+![](Images/unknown_word_spellcheck_example.png)
 
 ### Advanced Error Handler
 
