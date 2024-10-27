@@ -7,7 +7,7 @@ This is a plugin for [Flow Launcher](https://github.com/Flow-Launcher/Flow.Launc
     - [Install via Package Manager](#install-via-package-manager)
     - [Manual Installation](#manual-installation)
         - [Download from release](#download-from-a-release)
-        - [Download development version](#download-development-version)
+        - [Download and build development version](#download-and-build-development-version)
 3. [Features](#features)
     - [Feature List](#feature-list)
 
@@ -20,12 +20,14 @@ To get an API key, head to [developer.wordnik.com](https://developer.wordnik.com
 To Install Wordnik Dictionary through Flow's Plugin Manager, run the following command: `pm install wordnik dictionary`.
 
 ### Manual Installation
-This method is not recommended, only do this if you know what your doing.
+> [!WARNING]
+> This method is not recommended, only do this if you know what your doing.
 #### Download from a release
 
 1. Download the zipped release file.
 
 To download a previously released version, head to the [releases page](https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary/releases), find the version you want, and download the zip file.
+
 2. Extract the zip file into your plugins folder.
 
 You can access your userdata folder through the `Flow Launcher UserData Folder` command in the system commands plugin, from there go into the `Plugins` folder, and create a new folder for your release. Extract the contents of the zip folder into the new folder you've made.
@@ -34,7 +36,7 @@ You can access your userdata folder through the `Flow Launcher UserData Folder` 
 
 Finally you want to restart flow launcher. You can do this via the `Restart Flow Launcher` command in the system commands plugin.
 
-#### Download development version
+#### Download and build development version
 
 1. Head to your plugins folder.
 
@@ -42,7 +44,10 @@ You can access your userdata folder through the `Flow Launcher UserData Folder` 
 
 2. Clone the repository.
 
-Now you must clone the repository, which can be done with the following command: `git clone cibere/Flow.Launcher.Plugin.WordNikDictionary` (assuming git is installed).
+> [!NOTE]
+> [git](https://git-scm.com/) must be installed for this
+
+Now you must clone the repository, which can be done with the following command: `git clone https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary`.
 
 3. Setup your environment
 
