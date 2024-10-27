@@ -153,16 +153,27 @@ class WordnikDictionaryPlugin:
                         sub=score,
                         callback="change_query",
                         params=[f"{found_word}"],
-                        hide_after_callback=False,
                     )
                 )
             final = sorted(final, key=lambda opt: opt.sub, reverse=True)
             for idx, res in enumerate(final):
                 res.score = len(final) - idx
                 res.sub = f"Certainty: {res.sub}"
-            return [
-                Option(title="Word Not Found, did you mean...", icon="error", score=110)
-            ] + final
+
+            if final:
+                return [
+                    Option(
+                        title="Word Not Found, did you mean...", icon="error", score=110
+                    )
+                ] + final
+            else:
+                return [
+                    Option(
+                        title="Word Not Found, could not find any similiar words.",
+                        icon="error",
+                        score=110,
+                    )
+                ]
         else:
             return [Option.wnf()]
 
@@ -181,6 +192,17 @@ class WordnikDictionaryPlugin:
             LOG.info(f"Match found. {word=}, {filter_query=}")
 
         if filter_query:
+            if filter_query == "select-modifier":
+                return [
+                    Option(title="Modifier Selection Menu", score=100),
+                    Option(title="Syllables", sub="Get the syllables of a word", callback="change_query", params=[f"{word}!syllables"]),
+                    Option(title="Similiar", sub="Get categories of similiar words", callback="change_query", params=[f"{word}!similiar"]),
+                    Option(title="Filter by Part of Speech", sub="Filter results by the part of speech", callback="change_query", params=[f"{word}!select-pos"]),
+                ]
+            if filter_query == "select-pos":
+                return [
+                    Option(title="Part of Speech Selector", score=100)
+                ] + [Option(title=pos, callback="change_query", params=[f'{word}!{pos}']) for pos in parts_of_speech]
             if filter_query == "syllables":
                 syllables = self.get_syllables(word)
                 return [Option(title="-".join(syllables))] or self.handle_wnf(word)
@@ -203,10 +225,19 @@ class WordnikDictionaryPlugin:
                 return [
                     Option(
                         title="Unknown Search Modifier Given",
-                        sub="Press ENTER to open search modifier index",
-                        callback="open_url",
-                        params=[
-                            "https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary?tab=readme-ov-file#search-modifiers"
+                        sub="Press ENTER to open a select modifier menu.",
+                        callback="change_query",
+                        params=[f"{word}!select-modifier"],
+                        icon="error",
+                        context_data=[
+                            Option(
+                                title="Open Search Modifier section",
+                                callback="open_url",
+                                params=[
+                                    "https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary?tab=readme-ov-file#search-modifiers"
+                                ],
+                                sub="Press ENTER to open search modifier index",
+                            )
                         ],
                     )
                 ]

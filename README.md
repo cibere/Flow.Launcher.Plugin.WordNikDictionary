@@ -11,12 +11,15 @@ To get an API key, head to [developer.wordnik.com](https://developer.wordnik.com
 2. [Get information about definition of a word](#get-information-about-definition-of-a-word)
 3. [Search Modifiers](#search-modifiers)
     - [Filter by parts of speech](#filter-by-parts-of-speech)
+    - [Parts of Speech Selector](#parts-of-speech-selector)
     - [Get the syllables of a word](#get-the-syllables-of-a-word)
     - [Get similiar word by category](#get-similiar-word-by-category)
+    - [Search Modifier Selection Menu](#search-modifier-selection-menu)
 4. [Autocomplete Miss-spelled Words](#autocomplete-miss-spelled-words)
 5. [Advanced Error Handler](#advanced-error-handler)
     - [Expected Errors](#expected-errors)
     - [Unexpected Errors](#unexpected-errors)
+    - [Invalid Search Modifier](#invalid-search-modifier)
 
 ### Get the definition of a word
 Get a list of definitions for your word from various sources. Syntax: `def word`
@@ -34,18 +37,28 @@ List of acceptable parts of speech modifiers:
 noun, adjective, verb, adverb, interjection, pronoun, preposition, abbreviation, affix, article, auxiliary-verb, conjunction, definite-article, family-name, given-name, idiom, imperative, noun-plural, noun-posessive, past-participle, phrasal-prefix, proper-noun, proper-noun-plural, proper-noun-posessive, suffix, verb-intransitive, verb-transitive
 ```
 ![Example showing the useage of the parts of speech search modifier with the `def vague!noun` query](Images/filter_by_part_of_speech_example.png)
+#### Parts of Speech Selector
+To select a part of speech from the list of acceptable ones, you can use the `def word!select-pos` command.
+![](Images/select_pos_menu_example.png)
 #### Get the syllables of a word
 We can use the `syllables` search modifier to get the syllables of a word. Syntax: `def word!syllables`
 ![Example showing the result of the search `def developer!syllable`](Images/get_syllables_example.png)
 #### Get categories of similiar words
 To find the categories of avalible similiar words for a given word, use the following command: `def word!similiar`. To see all of the words in a given category, see the section below.
+
 ![](Images/find_similiar_word_categories_example.png)
 #### Get similiar word by category
 To find all of the words that are similiar to a word in a specific category, use the following command: `def word!rel-category`. For a list of avalible categories for a given word, see the above section.
 ![](Images/find_similiar_words_by_category_example.png)
+#### Search Modifier Selection Menu
+To see a list of available search modifiers available, use the `def word!select-modifier` command. From there you have quick access to the various modifiers, and the [Parts of Speech Selector Menu](#parts-of-speech-selector).
+![](Images/select_search_modifier_menu.png)
 
 ### Autocomplete Miss-spelled Words
 If you misspell a word, wordnik dictionary uses a list of over 370 thousand words to try and figure out what you were trying to spell, and ranks them by how certain it is.
+> [!NOTE]
+> Important Note: The source for the list of words and definitions are different! So there may be differences in the data.
+
 ![](Images/unknown_word_spellcheck_example.png)
 
 ### Advanced Error Handler
@@ -58,3 +71,7 @@ Expected errors will return a short, simple, and stylish error message.
 When unexpected errors occur, our error handler redirects it to the logs and prompts you to notify us by creating a github issue or discord thread with the logfile.
 
 https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary/raw/refs/heads/main/Images/unexpected_error_handler_showcase.mp4
+
+### Invalid Search Modifier
+When an invalid advanced search modifier is given, a simple error message is shown, with quick access to the [Search Modifier Selection Menu](#search-modifier-selection-menu)
+![](Images/invalid_search_modifier_example.png)

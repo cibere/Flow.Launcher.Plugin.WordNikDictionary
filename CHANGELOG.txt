@@ -2,3 +2,6 @@
 - Rewrite error handling
 - Update `change_query` function to get ActionKeyword from `plugin.json`
 - Add autocomplete/spellcheck for words that aren't found to check for possible misspellings (can be turned off in settings due to it being kind of slow)
+- Add search modifier selector
+    - Invalid search modifier error now points to this
+- Add parts of speech selector

@@ -25,7 +25,7 @@ class Option:
         self.params = params
         self.score = score
         self.context_data = context_data
-        self.hide_after_callback = hide_after_callback
+        self.hide_after_callback = False if callback == "change_query" else hide_after_callback
 
     @property
     def icon(self) -> str:

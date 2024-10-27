@@ -24,7 +24,6 @@ class WordRelationship(Dataclass):
             sub=", ".join(self.words[:5]),
             callback="change_query",
             params=[f"{self.word}!rel-{self.type}"],
-            hide_after_callback=False,
         )
 
     def _generate_context_menu_options(self) -> list[Option]:
@@ -42,7 +41,6 @@ class WordRelationship(Dataclass):
                 title=word,
                 callback="change_query",
                 params=[word],
-                hide_after_callback=False,
                 context_data=[
                     Option(title=f"Chosen Word: {word}"),
                     Option(title=f"Go back and click on the word to see definitions."),
