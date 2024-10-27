@@ -145,7 +145,7 @@ class WordnikDictionaryPlugin:
             final: list[Option] = []
 
             for found_word in matches:
-                score = SequenceMatcher(None, word, found_word).ratio()
+                score = SequenceMatcher(None, word, found_word).ratio() * 100
 
                 final.append(
                     Option(
@@ -158,7 +158,7 @@ class WordnikDictionaryPlugin:
             final = sorted(final, key=lambda opt: opt.sub, reverse=True)
             for idx, res in enumerate(final):
                 res.score = len(final) - idx
-                res.sub = f"Certainty: {res.sub}"
+                res.sub = f"Certainty: {res.sub}%"
 
             if final:
                 return [
