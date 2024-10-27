@@ -142,7 +142,7 @@ class WordnikDictionaryPlugin:
             with open("WordnikDictionary/word_list.txt", "r") as f:
                 word_list = f.read().split("\n")
             matches = get_close_matches(word, word_list, n=10)
-            final = []
+            final: list[Option] = []
 
             for found_word in matches:
                 score = SequenceMatcher(None, word, found_word).ratio()
@@ -159,6 +159,7 @@ class WordnikDictionaryPlugin:
             final = sorted(final, key=lambda opt: opt.sub, reverse=True)
             for idx, res in enumerate(final):
                 res.score = len(final) - idx
+                res.sub = f"Certainty: {res.sub}"
             return [
                 Option(title="Word Not Found, did you mean...", icon="error", score=110)
             ] + final
