@@ -57,7 +57,7 @@ To see a list of available search modifiers available, use the `def word!select-
 ### Autocomplete Miss-spelled Words
 If you misspell a word, wordnik dictionary uses a list of over 370 thousand words to try and figure out what you were trying to spell, and ranks them by how certain it is.
 > [!NOTE]
-> Important Note: The source for the list of words and definitions are different! So there may be differences in the data.
+> The source for the list of words and definitions are different! So there may be differences in the data.
 
 ![](Images/unknown_word_spellcheck_example.png)
 
