@@ -1,10 +1,6 @@
-name: Publish Release
+name: Publish and Release
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-    - 'plugin.json'
   workflow_dispatch:
 
 jobs:
@@ -12,20 +8,25 @@ jobs:
     runs-on: ubuntu-latest
     env:
       python_ver: 3.11
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+    
+      - name: Run generator file
+        run: python generate_plugin_file.py
 
       - name: get version
         id: version
         uses: notiz-dev/github-action-json-property@release
         with: 
-          path: 'plugin.json'
+          path: 'data.json'
           prop_path: 'Version'
 
       - run: echo ${{steps.version.outputs.prop}} 
@@ -38,10 +39,8 @@ jobs:
 
       - name: Publish
         if: success()
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: 'Flow.Launcher.Plugin.WordNikDictionary.zip'
           tag_name: "v${{steps.version.outputs.prop}}"
-          body_path: ${{ github.workspace }}-CHANGELOG.txt
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          body_path: 'CHANGELOG.txt'
