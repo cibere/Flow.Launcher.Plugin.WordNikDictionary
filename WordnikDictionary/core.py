@@ -99,7 +99,7 @@ class WordnikDictionaryPlugin:
                     )
                     final_results = InternalException().final_options()
                     break
-    
+
             data = {"result": final_results}
 
             payload = json.dumps(data)
