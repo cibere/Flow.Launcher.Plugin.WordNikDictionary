@@ -2,20 +2,18 @@ from __future__ import annotations
 
 from .options import Option
 
-__all__ = ("PluginException", "InternalException")
+__all__ = ("PluginException", "InternalException", "BasePluginException")
 
 
-class BaseException(Exception):
+class BasePluginException(Exception):
     options: list[Option]
 
     def __init__(self, text: str, options: list[Option]) -> None:
         super().__init__(text)
         self.options = options
-        for opt in options:
-            opt.icon = "error"
 
 
-class PluginException(BaseException):
+class PluginException(BasePluginException):
     @classmethod
     def create(
         cls: type[PluginException],
@@ -36,7 +34,7 @@ class PluginException(BaseException):
         return cls(opt.title, [opt])
 
 
-class InternalException(BaseException):
+class InternalException(BasePluginException):
     def __init__(self) -> None:
         opts = [
             Option(score=100, icon="error", title="An internal error has occured."),
@@ -67,3 +65,6 @@ class InternalException(BaseException):
             ),
         ]
         super().__init__("An Interal Error has occured.", opts)
+
+    def final_options(self) -> list[dict]:
+        return [opt.to_jsonrpc() for opt in self.options]

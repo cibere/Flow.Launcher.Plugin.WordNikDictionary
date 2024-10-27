@@ -23,7 +23,7 @@ class WordRelationship(Dataclass):
             title=self.type,
             sub=", ".join(self.words[:5]),
             callback="change_query",
-            params=[f"def {self.word}!rel-{self.type}"],
+            params=[f"{self.word}!rel-{self.type}"],
             hide_after_callback=False,
         )
 
@@ -41,7 +41,7 @@ class WordRelationship(Dataclass):
             Option(
                 title=word,
                 callback="change_query",
-                params=[f"def {word}"],
+                params=[word],
                 hide_after_callback=False,
                 context_data=[
                     Option(title=f"Chosen Word: {word}"),

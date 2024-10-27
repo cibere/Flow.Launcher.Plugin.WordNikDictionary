@@ -4,16 +4,17 @@ import os
 import re
 import sys
 import webbrowser
+from difflib import SequenceMatcher, get_close_matches
 from logging import getLogger
 from typing import Any
 
 from flowlauncher import FlowLauncher, FlowLauncherAPI
 
+from .dataclass import Dataclass
 from .definition import Definition
-from .errors import InternalException
+from .errors import BasePluginException, InternalException
 from .http import HTTPClient
 from .options import Option
-from .utils import convert_options, handle_plugin_exception
 from .word_relationship import WordRelationship
 
 LOG = getLogger(__name__)
@@ -50,13 +51,12 @@ parts_of_speech = [
 ]
 
 
-class WordnikDictionaryPlugin(FlowLauncher):
+class WordnikDictionaryPlugin:
     def __init__(self, args: str | None = None):
         self.http = HTTPClient(self)
 
         # defalut jsonrpc
         self.rpc_request = {"method": "query", "parameters": [""]}
-        self.debugMessage = ""
 
         if args is None and len(sys.argv) > 1:
 
@@ -72,22 +72,41 @@ class WordnikDictionaryPlugin(FlowLauncher):
 
         methods = inspect.getmembers(self, predicate=inspect.ismethod)
         request_method = dict(methods)[request_method_name]
-        results = request_method(*request_parameters)
-
         if request_method_name in ("query", "context_menu"):
-            data = {"result": results, "debugMessage": self.debugMessage}
-
             try:
-                payload = json.dumps(data)
-            except TypeError as e:
+                raw_results = request_method(*request_parameters)
+            except BasePluginException as e:
+                raw_results = e.options
+            except Exception as e:
                 LOG.error(
-                    f"Error occured while trying to convert payload for flow through json.dumps. Data: {data!r}",
+                    f"Error happened while running {request_method_name!r} method.",
                     exc_info=e,
                 )
-                raise InternalException() from e
-            else:
-                LOG.debug(f"Sending data to flow: {payload}")
-                print(payload)
+                raw_results = InternalException().options
+            final_results = []
+
+            for result in raw_results:
+                if isinstance(result, Dataclass):
+                    result = result.to_option()
+                if isinstance(result, Option):
+                    result = result.to_jsonrpc()
+                if isinstance(result, dict):
+                    final_results.append(result)
+                else:
+                    LOG.error(
+                        f"Unknown result given: {result!r}",
+                        exc_info=RuntimeError(f"Unknown result given: {result!r}"),
+                    )
+                    final_results = InternalException().final_options()
+                    break
+    
+            data = {"result": final_results}
+
+            payload = json.dumps(data)
+            LOG.debug(f"Sending data to flow: {payload}")
+            print(payload)
+        else:
+            request_method(*request_parameters)
 
     @property
     def settings(self) -> dict:
@@ -118,13 +137,39 @@ class WordnikDictionaryPlugin(FlowLauncher):
                 final.append(item)
         return final
 
-    @handle_plugin_exception
-    @convert_options
+    def handle_wnf(self, word: str) -> list[Option]:
+        if self.settings["spellcheck_autocomplete"]:
+            with open("WordnikDictionary/word_list.txt", "r") as f:
+                word_list = f.read().split("\n")
+            matches = get_close_matches(word, word_list, n=10)
+            final = []
+
+            for found_word in matches:
+                score = SequenceMatcher(None, word, found_word).ratio()
+
+                final.append(
+                    Option(
+                        title=found_word,
+                        sub=score,
+                        callback="change_query",
+                        params=[f"{found_word}"],
+                        hide_after_callback=False,
+                    )
+                )
+            final = sorted(final, key=lambda opt: opt.sub, reverse=True)
+            for idx, res in enumerate(final):
+                res.score = len(final) - idx
+            return [
+                Option(title="Word Not Found, did you mean...", icon="error", score=110)
+            ] + final
+        else:
+            return [Option.wnf()]
+
     def query(self, query: str):
         LOG.info(f"Received query: {query!r}")
 
         if not query.strip():
-            return [Option.wnf()]
+            return self.handle_wnf(query)
 
         word = query
         filter_query = None
@@ -137,15 +182,15 @@ class WordnikDictionaryPlugin(FlowLauncher):
         if filter_query:
             if filter_query == "syllables":
                 syllables = self.get_syllables(word)
-                return [Option(title="-".join(syllables))] or [Option.wnf()]
+                return [Option(title="-".join(syllables))] or self.handle_wnf(word)
             elif filter_query == "similiar":
-                return self.get_word_relationships(word) or [Option.wnf()]
+                return self.get_word_relationships(word) or self.handle_wnf(word)
             elif filter_query.startswith("rel-"):
                 rel_type = filter_query.removeprefix("rel-")
                 relationships = self.get_word_relationships(word)
                 for relationship in relationships:
                     if relationship.type == rel_type:
-                        return relationship.get_word_options() or [Option.wnf()]
+                        return relationship.get_word_options() or self.handle_wnf(word)
 
         definitions = self.get_definitions(word)
 
@@ -165,9 +210,8 @@ class WordnikDictionaryPlugin(FlowLauncher):
                     )
                 ]
 
-        return definitions or [Option.wnf()]
+        return definitions or self.handle_wnf(word)
 
-    @handle_plugin_exception
     def context_menu(self, data: list[Any]):
         LOG.debug(f"Context menu received: {data=}")
         return data
@@ -179,7 +223,9 @@ class WordnikDictionaryPlugin(FlowLauncher):
         FlowLauncherAPI.open_setting_dialog()
 
     def change_query(self, query: str):
-        FlowLauncherAPI.change_query(query)
+        with open("plugin.json", "r") as f:
+            data = json.load(f)
+        FlowLauncherAPI.change_query(f"{data['ActionKeyword']} {query}")
 
     def open_log_file_folder(self):
         os.system(f'explorer.exe /select, "wordnik.logs"')

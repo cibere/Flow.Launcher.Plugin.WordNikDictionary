@@ -15,3 +15,9 @@ body:
       name: results
       label: Number of results to display
       defaultValue: 20
+  - type: checkbox
+    attributes:
+      name: spellcheck_autocomplete
+      label: Autocomplete Miss-spelled Words
+      description: If marked yes, wordnik dictionary will attempt to find which word you were trying to spell if a word was not found. This is toggleable because it can be really slow, and you may just want to know if a word was found or not.
+      defaultValue: true

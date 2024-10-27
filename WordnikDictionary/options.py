@@ -10,7 +10,7 @@ class Option:
         self,
         *,
         title: str,
-        sub: str = "",
+        sub: Any = "",
         callback: str | None = None,
         params: list[Any] = [],
         context_data: list[Option] = [],
@@ -38,7 +38,7 @@ class Option:
     def to_jsonrpc(self) -> dict:
         data: dict[str, Any] = {
             "Title": self.title,
-            "SubTitle": self.sub,
+            "SubTitle": str(self.sub),
             "IcoPath": self.icon,
             "ContextData": [opt.to_jsonrpc() for opt in self.context_data],
             "score": self.score,
