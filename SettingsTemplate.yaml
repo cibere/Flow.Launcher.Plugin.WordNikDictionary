@@ -4,12 +4,6 @@ body:
       name: api_key
       label: Wordnik API Key
       description: Head to https://developer.wordnik.com to get your API key.
-  - type: checkbox
-    attributes:
-      name: use_canonical
-      label: Use Canonical
-      description: If true will try to return the correct word root ('cats' -> 'cat'). If false returns exactly what was requested.
-      defaultValue: false
   - type: input
     attributes:
       name: results

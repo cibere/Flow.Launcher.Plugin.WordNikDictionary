@@ -91,7 +91,6 @@ class HTTPClient:
         params = {
             "limit": limit,
             "includeRelated": False,
-            "useCanonical": self.settings["use_canonical"],
             "includeTags": False,
         }
         endpoint = f"/word.json/{quote_plus(word)}/definitions"
@@ -106,7 +105,6 @@ class HTTPClient:
 
         params = {
             "limit": 50,
-            "useCanonical": self.settings["use_canonical"],
         }
         endpoint = f"/word.json/{quote_plus(word)}/hyphenation"
 
@@ -130,7 +128,6 @@ class HTTPClient:
 
         params = {
             "limit": limit,
-            "useCanonical": self.settings["use_canonical"],
         }
         endpoint = f"/word.json/{quote_plus(word)}/relatedWords"
 

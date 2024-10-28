@@ -5,3 +5,4 @@
 - Add search modifier selector
     - Invalid search modifier error now points to this
 - Add parts of speech selector
+- Remove canonical option due to it not doing anything
