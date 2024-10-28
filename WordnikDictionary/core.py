@@ -167,6 +167,7 @@ class WordnikDictionaryPlugin:
                         title="Download Latest File",
                         callback="download_word_list",
                         icon="error",
+                        sub="Source: https://github.com/dwyl/english-words",
                     ),
                     Option(
                         title="Open Settings to choose custom file",

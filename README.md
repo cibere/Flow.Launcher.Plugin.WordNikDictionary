@@ -108,9 +108,9 @@ To see a list of available search modifiers available, use the `def word!select-
 ![](Images/select_search_modifier_menu.png)
 
 ### Autocomplete Miss-spelled Words
-If you misspell a word, wordnik dictionary uses a list of over 370 thousand words to try and figure out what you were trying to spell, and ranks them by how certain it is.
+If you misspell a word, wordnik dictionary uses a list of over 370 thousand words to try and figure out what you were trying to spell, and ranks them by how certain it is. Though the source for the list of words and definitions are different! So there may be differences in the data.
 > [!NOTE]
-> The source for the list of words and definitions are different! So there may be differences in the data.
+> When attempting to use this feature for the first time, you will be prompted to either open up the settings menu to choose the path of a custom word list file, or download one from [dwyl on github](https://github.com/dwyl/english-words).
 
 ![](Images/unknown_word_spellcheck_example.png)
 
