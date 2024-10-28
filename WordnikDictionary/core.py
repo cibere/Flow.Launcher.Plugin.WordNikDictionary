@@ -332,4 +332,8 @@ class WordnikDictionaryPlugin:
         data: bytes = self.http.fetch_word_list_file()
         with open(DEFAULT_WORD_LIST_LOC, "wb") as f:
             f.write(data)
-        FlowLauncherAPI.show_msg(title="Word List Successfully Downloaded", sub_title="", ico_path="Images/app.png")
+        FlowLauncherAPI.show_msg(
+            title="Word List Successfully Downloaded",
+            sub_title="",
+            ico_path="Images/app.png",
+        )

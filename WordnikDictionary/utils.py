@@ -7,7 +7,9 @@ __all__ = ("setup_logging",)
 
 def setup_logging() -> None:
     level = logging.DEBUG
-    handler = logging.handlers.RotatingFileHandler("wordnik.logs", maxBytes=1000000, encoding="UTF-8")
+    handler = logging.handlers.RotatingFileHandler(
+        "wordnik.logs", maxBytes=1000000, encoding="UTF-8"
+    )
 
     dt_fmt = "%Y-%m-%d %H:%M:%S"
     formatter = logging.Formatter(
