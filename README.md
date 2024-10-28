@@ -10,6 +10,7 @@ This is an overcomplicated and feature-packed plugin for [Flow Launcher](https:/
         - [Download and build development version](#download-and-build-development-version)
 3. [Features](#features)
     - [Feature List](#feature-list)
+4. [Settings Menu](#settings-menu)
 
 ## Get an API Key
 To get an API key, head to [developer.wordnik.com](https://developer.wordnik.com/), and create an account. Once you've created your account, you'll be able to fill out a form to request an api key.
@@ -128,3 +129,30 @@ https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary/raw/refs/heads/
 ### Invalid Search Modifier
 When an invalid advanced search modifier is given, a simple error message is shown, with quick access to the [Search Modifier Selection Menu](#search-modifier-selection-menu)
 ![](Images/invalid_search_modifier_example.png)
+
+## Settings Menu
+1. Action Keyword
+
+The keyword that activates the plugin, defaults to `def` with the stable release, and `ddef` with the dev version.
+> [!WARNING]
+> Changing this is NOT recommended. Currently, many QOL features require these keywords to stay at the default, otherwise some query changing options will not work properly.
+
+2. Wordnik API Key
+
+Head to https://developer.wordnik.com to get your API key.
+
+3. Number of results to display.
+
+Number of results to display. Defaults to 20, you must give an integer.
+
+4. Autocomplete Miss-spelled Words
+
+If marked yes, wordnik dictionary will attempt to find which word you were trying to spell if a word was not found. This is toggleable because it can be really slow, and you may just want to know if a word was found or not.
+Defaults to checked.
+
+5. Location of word list file
+
+If you want to use a custom list of words for the autocomplete misspelling feature, you can. Just put the path to the file here, and reload plugin data. Make sure each word is on it's on line.
+Default is blank, and blank means the default file is used. This setting on does anything if the [Autocomplete miss-spelled words setting](#autocomplete-miss-spelled-words) is checked.
+
+![](Images/settings_menu.png)
