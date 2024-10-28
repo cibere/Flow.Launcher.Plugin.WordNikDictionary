@@ -3,3 +3,4 @@ venv/*
 lib/*
 wordnik.logs
 *.pyc
+WorknikDictionary/word_list.txt
