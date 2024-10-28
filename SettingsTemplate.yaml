@@ -15,3 +15,8 @@ body:
       label: Autocomplete Miss-spelled Words
       description: If marked yes, wordnik dictionary will attempt to find which word you were trying to spell if a word was not found. This is toggleable because it can be really slow, and you may just want to know if a word was found or not.
       defaultValue: true
+  - type: input
+    attributes:
+      name: wordlist_loc
+      label: Location of word list file
+      description: If you want to use a custom list of words for the autocomplete misspelling feature, you can. Just put the path to the file here, and reload plugin data. Make sure each word is on it's on line.

@@ -19,6 +19,7 @@ from .word_relationship import WordRelationship
 
 LOG = getLogger(__name__)
 QUERY_REGEX = re.compile(r"^(?P<word>[a-zA-Z]+)(!(?P<filter>[a-zA-Z-_]+))?$")
+DEFAULT_WORD_LIST_LOC = "WordnikDictionary/word_list.txt"
 
 parts_of_speech = [
     "noun",
@@ -139,8 +140,55 @@ class WordnikDictionaryPlugin:
 
     def handle_wnf(self, word: str) -> list[Option]:
         if self.settings["spellcheck_autocomplete"]:
-            with open("WordnikDictionary/word_list.txt", "r") as f:
-                word_list = f.read().split("\n")
+            loc = self.settings.get("wordlist_loc", None) or DEFAULT_WORD_LIST_LOC
+            custom = loc != DEFAULT_WORD_LIST_LOC
+            exists = os.path.exists(loc)
+            if not exists:
+                if custom:
+                    return [
+                        Option(
+                            title="Word List file not found.", score=100, icon="error"
+                        ),
+                        Option(
+                            title="Are you sure you gave the right file location?",
+                            sub="Make sure you gave an absolute path",
+                            score=50,
+                            icon="error",
+                        ),
+                        Option(
+                            title="Open Flow Launcher Settings",
+                            score=0,
+                            callback="open_settings_menu",
+                        ),
+                    ]
+                return [
+                    Option(title="Word List file not found.", icon="error", score=100),
+                    Option(
+                        title="Download Latest File",
+                        callback="download_word_list",
+                        icon="error",
+                    ),
+                    Option(
+                        title="Open Settings to choose custom file",
+                        callback="open_settings_menu",
+                        icon="error",
+                    ),
+                ]
+            try:
+                with open(loc, "r") as f:
+                    word_list = f.read().split("\n")
+            except PermissionError as e:
+                if custom:
+                    LOG.debug(f"Permission error encountered", exc_info=e)
+                    return [
+                        Option(
+                            title="Permission Error encountered when trying to open wordlist.",
+                            sub="Make sure the wordlist is in a directory that Flow Launcher has permissions to access.",
+                            icon="error",
+                        )
+                    ]
+                else:
+                    raise InternalException() from e
             if word in word_list:
                 return [Option(title="No Results Found")]
             matches = get_close_matches(word, word_list, n=10)
@@ -197,14 +245,30 @@ class WordnikDictionaryPlugin:
             if filter_query == "select-modifier":
                 return [
                     Option(title="Modifier Selection Menu", score=100),
-                    Option(title="Syllables", sub="Get the syllables of a word", callback="change_query", params=[f"{word}!syllables"]),
-                    Option(title="Similiar", sub="Get categories of similiar words", callback="change_query", params=[f"{word}!similiar"]),
-                    Option(title="Filter by Part of Speech", sub="Filter results by the part of speech", callback="change_query", params=[f"{word}!select-pos"]),
+                    Option(
+                        title="Syllables",
+                        sub="Get the syllables of a word",
+                        callback="change_query",
+                        params=[f"{word}!syllables"],
+                    ),
+                    Option(
+                        title="Similiar",
+                        sub="Get categories of similiar words",
+                        callback="change_query",
+                        params=[f"{word}!similiar"],
+                    ),
+                    Option(
+                        title="Filter by Part of Speech",
+                        sub="Filter results by the part of speech",
+                        callback="change_query",
+                        params=[f"{word}!select-pos"],
+                    ),
                 ]
             if filter_query == "select-pos":
-                return [
-                    Option(title="Part of Speech Selector", score=100)
-                ] + [Option(title=pos, callback="change_query", params=[f'{word}!{pos}']) for pos in parts_of_speech]
+                return [Option(title="Part of Speech Selector", score=100)] + [
+                    Option(title=pos, callback="change_query", params=[f"{word}!{pos}"])
+                    for pos in parts_of_speech
+                ]
             if filter_query == "syllables":
                 syllables = self.get_syllables(word)
                 return [Option(title="-".join(syllables))] or self.handle_wnf(word)
@@ -263,3 +327,9 @@ class WordnikDictionaryPlugin:
 
     def open_log_file_folder(self):
         os.system(f'explorer.exe /select, "wordnik.logs"')
+
+    def download_word_list(self):
+        data: bytes = self.http.fetch_word_list_file()
+        with open(DEFAULT_WORD_LIST_LOC, "wb") as f:
+            f.write(data)
+        FlowLauncherAPI.show_msg(title="Word List Successfully Downloaded", sub_title="", ico_path="Images/app.png")

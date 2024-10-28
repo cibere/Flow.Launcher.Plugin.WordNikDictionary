@@ -132,3 +132,12 @@ class HTTPClient:
         endpoint = f"/word.json/{quote_plus(word)}/relatedWords"
 
         return self.request("GET", endpoint, params=params)
+
+    def fetch_word_list_file(self) -> Any:
+        """
+        Source: https://github.com/dwyl/english-words
+        """
+        url = "https://raw.githubusercontent.com/dwyl/english-words/refs/heads/master/words_alpha.txt"
+        res = requests.get(url)
+        res.raise_for_status()
+        return res.content
