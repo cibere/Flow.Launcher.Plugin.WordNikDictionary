@@ -9,3 +9,4 @@
 - Add parts of speech selector
 - Remove canonical option due to it not doing anything
 - Fix bug with some queries returning errors due to the plugin attempting to log unicode characters with the wrong encoding.
+- Add `scrable` search modifier to get the scrable score of a word.

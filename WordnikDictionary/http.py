@@ -39,6 +39,7 @@ class HTTPClient:
         *,
         params: dict[str, Any] | None = None,
         headers: dict[str, str] | None = None,
+        raise_wnf_on_404: bool = True,
         **kwargs,
     ) -> Any:
         if params is None:
@@ -66,7 +67,10 @@ class HTTPClient:
             )
             raise PluginException(opt.title, [opt])
         elif res.status_code == 404:
-            raise PluginException.wnf()
+            if raise_wnf_on_404:
+                raise PluginException.wnf()
+            else:
+                return data
 
         res.raise_for_status()
 
@@ -141,3 +145,13 @@ class HTTPClient:
         res = requests.get(url)
         res.raise_for_status()
         return res.content
+
+    def fetch_scrabble_score(self, word: str) -> dict[str, int]:
+        """
+        Docs on the endpoint
+        https://developer.wordnik.com/docs#!/word/getScrabbleScore
+        """
+
+        endpoint = f"/word.json/{quote_plus(word)}/scrabbleScore"
+
+        return self.request("GET", endpoint, raise_wnf_on_404=False)

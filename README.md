@@ -69,6 +69,7 @@ Finally you want to restart flow launcher. You can do this via the `Restart Flow
     - [Get the syllables of a word](#get-the-syllables-of-a-word)
     - [Get similiar word by category](#get-similiar-word-by-category)
     - [Search Modifier Selection Menu](#search-modifier-selection-menu)
+    - [Get Scrabble Score](#get-scrabble-score)
 4. [Autocomplete Miss-spelled Words](#autocomplete-miss-spelled-words)
 5. [Advanced Error Handler](#advanced-error-handler)
     - [Expected Errors](#expected-errors)
@@ -107,6 +108,9 @@ To find all of the words that are similiar to a word in a specific category, use
 #### Search Modifier Selection Menu
 To see a list of available search modifiers available, use the `def word!select-modifier` command. From there you have quick access to the various modifiers, and the [Parts of Speech Selector Menu](#parts-of-speech-selector).
 ![](Images/select_search_modifier_menu.png)
+#### Get Scrabble Score
+You can get the scrabble score of a word by using the `scrabble` modifier like so: `def word!scrabble`. If a word is invalid or not found, a score of `0` is shown.
+![](Images/scrabble_score_example.png)
 
 ### Autocomplete Miss-spelled Words
 If you misspell a word, wordnik dictionary uses a list of over 370 thousand words to try and figure out what you were trying to spell, and ranks them by how certain it is. Though the source for the list of words and definitions are different! So there may be differences in the data.

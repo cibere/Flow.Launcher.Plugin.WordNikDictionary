@@ -138,6 +138,10 @@ class WordnikDictionaryPlugin:
                 final.append(item)
         return final
 
+    def get_scrabble_score(self, word: str) -> int:
+        data = self.http.fetch_scrabble_score(word)
+        return data.get("value") or 0
+
     def handle_wnf(self, word: str) -> list[Option]:
         if self.settings["spellcheck_autocomplete"]:
             loc = self.settings.get("wordlist_loc", None) or DEFAULT_WORD_LIST_LOC
@@ -232,6 +236,7 @@ class WordnikDictionaryPlugin:
         LOG.info(f"Received query: {query!r}")
 
         if not query.strip():
+            LOG.info("No input given, handling wnf.")
             return self.handle_wnf(query)
 
         word = query
@@ -259,6 +264,12 @@ class WordnikDictionaryPlugin:
                         params=[f"{word}!similiar"],
                     ),
                     Option(
+                        title="Scrabble",
+                        sub="Get the scrabble score of a word.",
+                        callback="change_query",
+                        params=[f"{word}!scrabble"],
+                    ),
+                    Option(
                         title="Filter by Part of Speech",
                         sub="Filter results by the part of speech",
                         callback="change_query",
@@ -275,6 +286,9 @@ class WordnikDictionaryPlugin:
                 return [Option(title="-".join(syllables))] or self.handle_wnf(word)
             elif filter_query == "similiar":
                 return self.get_word_relationships(word) or self.handle_wnf(word)
+            elif filter_query == "scrabble":
+                value = self.get_scrabble_score(word)
+                return [Option(title=f"Scrabble Score: {value}")]
             elif filter_query.startswith("rel-"):
                 rel_type = filter_query.removeprefix("rel-")
                 relationships = self.get_word_relationships(word)
@@ -308,7 +322,7 @@ class WordnikDictionaryPlugin:
                         ],
                     )
                 ]
-
+        LOG.info(f"No modifiers, returning definitions: {definitions!r}")
         return definitions or self.handle_wnf(word)
 
     def context_menu(self, data: list[Any]):
