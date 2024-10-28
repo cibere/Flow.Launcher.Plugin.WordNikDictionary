@@ -1,8 +1,11 @@
 # v2.0.1
 - Rewrite error handling
 - Update `change_query` function to get ActionKeyword from `plugin.json`
-- Add autocomplete/spellcheck for words that aren't found to check for possible misspellings (can be turned off in settings due to it being kind of slow)
+- Add autocomplete/spellcheck for words that aren't found to check for possible misspellings (can be turned off in settings due to it being kind of slow).
+    - Make `word_list.txt` not automatically download incase of the use of a custom word list, or not using the feature at all to use less storage.
+    - Support for custom word lists.
 - Add search modifier selector
     - Invalid search modifier error now points to this
 - Add parts of speech selector
 - Remove canonical option due to it not doing anything
+- Fix bug with some queries returning errors due to the plugin attempting to log unicode characters with the wrong encoding.
