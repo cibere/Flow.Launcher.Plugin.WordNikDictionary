@@ -1,5 +1,5 @@
 # Flow.Launcher.Plugin.WordNikDictionary
-This is a plugin for [Flow Launcher](https://github.com/Flow-Launcher/Flow.Launcher) that lets you easily see the definitions of words using [wordnik](https://wordnik.com).
+This is an overcomplicated and feature-packed plugin for [Flow Launcher](https://github.com/Flow-Launcher/Flow.Launcher) that lets you easily see the definitions (among other things) of words using [wordnik](https://wordnik.com).
 
 ## Table of Contents
 1. [Get an API Key](#get-an-api-key)

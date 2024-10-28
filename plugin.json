@@ -2,7 +2,7 @@
     "ID": "6ed41d7e3d174379972e1cdacb647474",
     "ActionKeyword": "ddef",
     "Name": "Dev - Wordnik Dictionary",
-    "Description": "Wordnik wrapper using python for Flow Launcher. Gives you the definition of words similiar to duckduckgo.",
+    "Description": "A feature-packed that lets you see stuff like definitions for words using wordnik.",
     "Author": "cibere",
     "Version": "2.0.1",
     "Language": "python",
