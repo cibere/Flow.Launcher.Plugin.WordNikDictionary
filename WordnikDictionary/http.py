@@ -39,6 +39,7 @@ class HTTPClient:
         *,
         params: dict[str, Any] | None = None,
         headers: dict[str, str] | None = None,
+        raise_wnf_on_404: bool = True,
         **kwargs,
     ) -> Any:
         if params is None:
@@ -66,7 +67,10 @@ class HTTPClient:
             )
             raise PluginException(opt.title, [opt])
         elif res.status_code == 404:
-            raise PluginException.wnf()
+            if raise_wnf_on_404:
+                raise PluginException.wnf()
+            else:
+                return data
 
         res.raise_for_status()
 
@@ -91,7 +95,6 @@ class HTTPClient:
         params = {
             "limit": limit,
             "includeRelated": False,
-            "useCanonical": self.settings["use_canonical"],
             "includeTags": False,
         }
         endpoint = f"/word.json/{quote_plus(word)}/definitions"
@@ -106,7 +109,6 @@ class HTTPClient:
 
         params = {
             "limit": 50,
-            "useCanonical": self.settings["use_canonical"],
         }
         endpoint = f"/word.json/{quote_plus(word)}/hyphenation"
 
@@ -130,8 +132,26 @@ class HTTPClient:
 
         params = {
             "limit": limit,
-            "useCanonical": self.settings["use_canonical"],
         }
         endpoint = f"/word.json/{quote_plus(word)}/relatedWords"
 
         return self.request("GET", endpoint, params=params)
+
+    def fetch_word_list_file(self) -> Any:
+        """
+        Source: https://github.com/dwyl/english-words
+        """
+        url = "https://raw.githubusercontent.com/dwyl/english-words/refs/heads/master/words_alpha.txt"
+        res = requests.get(url)
+        res.raise_for_status()
+        return res.content
+
+    def fetch_scrabble_score(self, word: str) -> dict[str, int]:
+        """
+        Docs on the endpoint
+        https://developer.wordnik.com/docs#!/word/getScrabbleScore
+        """
+
+        endpoint = f"/word.json/{quote_plus(word)}/scrabbleScore"
+
+        return self.request("GET", endpoint, raise_wnf_on_404=False)

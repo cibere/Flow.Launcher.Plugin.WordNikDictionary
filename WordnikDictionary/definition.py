@@ -29,7 +29,7 @@ class Definition(Dataclass):
             )
 
     @classmethod
-    def from_json(cls: type[Definition], _: str, data: dict) -> Definition | None:
+    def from_json(cls: type[Definition], word: str, data: dict) -> Definition | None:
         if data.get("text") is None:
             return None
         if isinstance(data["text"], list):
