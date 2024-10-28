@@ -8,7 +8,7 @@ from difflib import SequenceMatcher, get_close_matches
 from logging import getLogger
 from typing import Any
 
-from flowlauncher import FlowLauncher, FlowLauncherAPI
+from flowlauncher import FlowLauncherAPI
 
 from .dataclass import Dataclass
 from .definition import Definition
@@ -18,7 +18,7 @@ from .options import Option
 from .word_relationship import WordRelationship
 
 LOG = getLogger(__name__)
-QUERY_REGEX = re.compile(r"^(?P<word>[a-zA-Z]+)(!(?P<filter>[a-zA-Z-]+))?$")
+QUERY_REGEX = re.compile(r"^(?P<word>[a-zA-Z]+)(!(?P<filter>[a-zA-Z-_]+))?$")
 
 parts_of_speech = [
     "noun",
@@ -141,6 +141,8 @@ class WordnikDictionaryPlugin:
         if self.settings["spellcheck_autocomplete"]:
             with open("WordnikDictionary/word_list.txt", "r") as f:
                 word_list = f.read().split("\n")
+            if word in word_list:
+                return [Option(title="No Results Found")]
             matches = get_close_matches(word, word_list, n=10)
             final: list[Option] = []
 
