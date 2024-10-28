@@ -8,7 +8,7 @@ data['Name'] = "Worknik Dictionary"
 data['Website'] = f"https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary/tree/v{data['Version']}"
 data['ActionKeyword'] = "def"
 
-with open("plugin.json", "r") as f:
+with open("plugin.json", "w") as f:
     json.dump(data, f)
 
 print("New plugin.json contents:")
