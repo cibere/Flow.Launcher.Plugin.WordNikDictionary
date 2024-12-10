@@ -1,16 +1,49 @@
 from __future__ import annotations
 
-from .dataclass import Dataclass
-from .options import Option
+from typing import TYPE_CHECKING
 
-__all__ = ("WordRelationship",)
+from flogin import ExecuteResponse, Result
+
+if TYPE_CHECKING:
+    from .plugin import WordnikDictionaryPlugin
+
+__all__ = ("WordRelationship", "WordResult")
 
 
-class WordRelationship(Dataclass):
+class WordResult(Result):
+    plugin: WordnikDictionaryPlugin | None  # type: ignore
+
+    def __init__(self, word: str):
+        super().__init__(title=word, icon="Images/app.png")
+
+    async def callback(self):
+        assert self.plugin
+
+        await self.plugin.api.change_query(
+            f"{self.plugin.preferred_keyword} {self.title}"
+        )
+        return ExecuteResponse(hide=False)
+
+
+class WordRelationship(Result):
+    plugin: WordnikDictionaryPlugin | None  # type: ignore
+
     def __init__(self, word: str, type: str, words: list[str]) -> None:
         self.word: str = word
         self.type: str = type
         self.words: list[str] = words
+
+        super().__init__(
+            title=self.type, sub=", ".join(self.words[:5]), icon="Images/app.png"
+        )
+
+    async def callback(self):
+        assert self.plugin
+
+        await self.plugin.api.change_query(
+            f"{self.plugin.preferred_keyword} {self.word}!rel-{self.type}"
+        )
+        return ExecuteResponse(hide=False)
 
     @classmethod
     def from_json(
@@ -18,33 +51,15 @@ class WordRelationship(Dataclass):
     ) -> WordRelationship | None:
         return cls(word, data["relationshipType"], data["words"])
 
-    def _generate_base_option(self) -> Option:
-        return Option(
-            title=self.type,
-            sub=", ".join(self.words[:5]),
-            callback="change_query",
-            params=[f"{self.word}!rel-{self.type}"],
-        )
-
-    def _generate_context_menu_options(self) -> list[Option]:
+    async def context_menu(self):
         return [
-            Option(title=f"Original Word: {self.word}"),
-            Option(title=f"Chosen Category: {self.type}"),
-            Option(
-                title="Go back and click on the category to see a full list of the words."
+            Result(icon="Images/app.png", title=f"Original Word: {self.word}"),
+            Result(icon="Images/app.png", title=f"Chosen Category: {self.type}"),
+            Result(
+                icon="Images/app.png",
+                title="Go back and click on the category to see a full list of the words.",
             ),
         ]
 
-    def get_word_options(self) -> list[Option]:
-        return [
-            Option(
-                title=word,
-                callback="change_query",
-                params=[word],
-                context_data=[
-                    Option(title=f"Chosen Word: {word}"),
-                    Option(title=f"Go back and click on the word to see definitions."),
-                ],
-            )
-            for word in self.words
-        ]
+    def get_word_options(self) -> list[Result]:
+        return [WordResult(word.lower()) for word in self.words]

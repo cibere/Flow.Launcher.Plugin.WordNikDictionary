@@ -5,7 +5,7 @@
     "Description": "A feature-packed that lets you see stuff like definitions for words using wordnik.",
     "Author": "cibere",
     "Version": "2.1.0",
-    "Language": "python",
+    "Language": "python_v2",
     "Website": "https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary",
     "IcoPath": "Images\\app.png",
     "ExecuteFileName": "main.py"

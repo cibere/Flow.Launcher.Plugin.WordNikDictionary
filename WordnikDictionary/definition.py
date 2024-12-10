@@ -1,14 +1,22 @@
 from __future__ import annotations
 
+from functools import partial
+from typing import TYPE_CHECKING
+
+from flogin import ExecuteResponse, Result
+
 from .attributions import Attribution
-from .dataclass import Dataclass
 from .html_stripper import strip_tags
-from .options import Option
+
+if TYPE_CHECKING:
+    from .plugin import WordnikDictionaryPlugin
 
 __all__ = ("Definition",)
 
 
-class Definition(Dataclass):
+class Definition(Result):
+    plugin: WordnikDictionaryPlugin | None  # type: ignore
+
     def __init__(
         self,
         part_of_speech: str | None,
@@ -28,6 +36,16 @@ class Definition(Dataclass):
                 r"!@#$%^&*()-=_+[]{}\|';:\"/.,?><`~    "
             )
 
+        super().__init__(
+            title=self.text,
+            sub=(
+                f"{self.part_of_speech}; {self.attribution.text}"
+                if self.part_of_speech
+                else self.attribution.text
+            ),
+            icon="Images/app.png",
+        )
+
     @classmethod
     def from_json(cls: type[Definition], word: str, data: dict) -> Definition | None:
         if data.get("text") is None:
@@ -44,26 +62,55 @@ class Definition(Dataclass):
             data["word"],
         )
 
-    def _generate_base_option(self) -> Option:
-        return Option(
-            title=self.text,
-            sub=(
-                f"{self.part_of_speech}; {self.attribution.text}"
-                if self.part_of_speech
-                else self.attribution.text
-            ),
-            callback="open_url",
-            params=[self.wordnik_url],
+    async def callback(self):
+        assert self.plugin
+
+        await self.plugin.api.open_url(self.wordnik_url)
+        return ExecuteResponse()
+
+    async def context_menu(self):
+        assert self.plugin
+
+        yield Result(
+            f"Word: {self.word}",
+            sub="Press CTRL + C to copy",
+            copy_text=self.word,
+            icon="Images/app.png",
+        )
+        yield Result(
+            f"Definition: {self.text}",
+            sub="Press CTRL + C to copy",
+            copy_text=self.text,
+            icon="Images/app.png",
+        )
+        if self.part_of_speech is not None:
+            yield Result(
+                f"Part of Speech: {self.part_of_speech}",
+                sub="Press CTRL + C to copy",
+                copy_text=self.part_of_speech,
+                icon="Images/app.png",
+            )
+
+        yield Result.create_with_partial(
+            partial(self.plugin.api.open_url, self.wordnik_url),
+            title=f"Wordnik URL: {self.wordnik_url}",
+            sub="Press CTRL + C to copy, cick to open",
+            copy_text=self.wordnik_url,
+            icon="Images/app.png",
         )
 
-    def _generate_context_menu_options(self) -> list[Option]:
-        temp = [Option(title=self.word, sub=self.text)]
-        if self.part_of_speech:
-            temp.append(
-                Option(title=f"Part of Speech: {self.part_of_speech}"),
+        if self.attribution.text:
+            yield Result(
+                f"Attribution: {self.attribution.text}",
+                sub="Press CTRL+C to copy",
+                copy_text=self.attribution.text,
+                icon="Images/app.png",
             )
-        if self.wordnik_url:
-            temp.append(Option.url("in Wordnik", self.wordnik_url))
         if self.attribution.url:
-            temp.append(Option.url("Attribution", self.attribution.url))
-        return temp
+            yield Result.create_with_partial(
+                partial(self.plugin.api.open_url, self.attribution.url),
+                title=f"Attribution URL: {self.attribution.url}",
+                sub="Press CTRL+C to copy, click to open",
+                copy_text=self.attribution.url,
+                icon="Images/app.png",
+            )

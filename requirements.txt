@@ -1,2 +1,2 @@
-flowlauncher
-requests
+aiohttp==3.11.6
+flogin==0.0.5

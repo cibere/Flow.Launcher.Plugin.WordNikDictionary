@@ -1,45 +1,45 @@
 from __future__ import annotations
 
+from functools import partial
 from logging import getLogger
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Coroutine, TypeVar
 from urllib.parse import quote_plus
 
-import requests
+import aiohttp
+from flogin import Result, Settings
+from flogin.utils import cached_coro
 
-from .errors import PluginException
-from .options import Option
+from .errors import PluginException, WordNotFound
 
-LOG = getLogger(__name__)
 if TYPE_CHECKING:
-    from .core import WordnikDictionaryPlugin
+    from .plugin import WordnikDictionaryPlugin
+
+    T = TypeVar("T")
+    Awaitable = Coroutine[Any, Any, T]
+else:
+    Awaitable = Any
+    
+LOG = getLogger(__name__)
 
 ICO_PATH = "Images/app.png"
 
 
 class HTTPClient:
-
-    def __init__(self, flow: WordnikDictionaryPlugin):
+    def __init__(self, flow: WordnikDictionaryPlugin, session: aiohttp.ClientSession):
         self.flow = flow
+        self.session: aiohttp.ClientSession = session
 
     @property
-    def settings(self) -> dict:
-        return self.flow.rpc_request["settings"]
+    def settings(self) -> Settings:
+        return self.flow.settings
 
-    @property
-    def debug(self) -> bool:
-        try:
-            return self.settings["debug_mode"]
-        except TypeError:
-            return True
-
-    def request(
+    async def request(
         self,
         method: str,
         endpoint: str,
         *,
         params: dict[str, Any] | None = None,
         headers: dict[str, str] | None = None,
-        raise_wnf_on_404: bool = True,
         **kwargs,
     ) -> Any:
         if params is None:
@@ -51,32 +51,30 @@ class HTTPClient:
         params["api_key"] = self.settings["api_key"]
         url = f"https://api.wordnik.com/v4{endpoint}"
         LOG.debug(f"Sending HTTP request. {url=}, {params=}, {headers=}, {kwargs=}")
-        res = requests.request(method, url, params=params, headers=headers, **kwargs)
-        data = res.json()
-        LOG.debug(
-            f"Received HTTP response. {res.status_code=}, {res.headers=}, {data=}"
+        res = await self.session.request(
+            method, url, params=params, headers=headers, **kwargs
         )
-        if res.status_code == 401:
-            opt = Option(
-                title="Invalid API Key",
-                sub="Click ENTER for instructions on how to get a valid API key",
-                callback="open_url",
-                params=[
-                    "https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary?tab=readme-ov-file#get-an-api-key"
-                ],
+        data = await res.json()
+        LOG.debug(f"Received HTTP response. {res.status=}, {res.headers=}, {data=}")
+        if res.status == 401:
+            raise PluginException(
+                "Invalid API Key",
+                Result.create_with_partial(
+                    partial(
+                        self.flow.api.open_url,
+                        "https://github.com/cibere/Flow.Launcher.Plugin.WordNikDictionary?tab=readme-ov-file#get-an-api-key",
+                    ),
+                    title="Invalid API Key",
+                    sub="Click ENTER for instructions on how to get a valid API key",
+                ),
             )
-            raise PluginException(opt.title, [opt])
-        elif res.status_code == 404:
-            if raise_wnf_on_404:
-                raise PluginException.wnf()
-            else:
-                return data
 
         res.raise_for_status()
 
         return data
 
-    def fetch_definitions(self, word: str) -> list[dict[str, Any]]:
+    @cached_coro
+    def fetch_definitions(self, word: str) -> Awaitable[list[dict[str, Any]]]:
         """
         Docs on the endpoint
         https://developer.wordnik.com/docs#!/word/getDefinitions
@@ -85,23 +83,35 @@ class HTTPClient:
         try:
             limit = int(self.settings["results"])
         except ValueError:
-            opt = Option(
-                title="Error: Invalid Results Value Given.",
-                sub="The Results settings item must be a valid number.",
-                callback="open_settings_menu",
+            raise PluginException(
+                "Invalid Results Value Given",
+                Result.create_with_partial(
+                    self.flow.api.open_settings_menu,
+                    title="Error: Invalid Results Value Given.",
+                    sub="The Results settings item must be a valid number.",
+                ),
             )
-            raise PluginException(opt.title, [opt])
+        
+        ew = quote_plus(word)
+
+        LOG.debug(f"Getting definition for {ew!r}")
 
         params = {
             "limit": limit,
-            "includeRelated": False,
-            "includeTags": False,
+            # "includeRelated": False,
+            # "includeTags": False,
         }
-        endpoint = f"/word.json/{quote_plus(word)}/definitions"
+        endpoint = f"/word.json/{ew}/definitions"
 
-        return self.request("GET", endpoint, params=params)
+        try:
+            return self.request("GET", endpoint, params=params)
+        except aiohttp.ClientResponseError as e:
+            if e.code == 404:
+                raise WordNotFound(word)
+            raise
 
-    def fetch_syllables(self, word: str) -> list[dict[str, Any]]:
+    @cached_coro
+    def fetch_syllables(self, word: str) -> Awaitable[list[dict[str, Any]]]:
         """
         Docs on the endpoint
         https://developer.wordnik.com/docs#!/word/getHyphenation
@@ -114,7 +124,8 @@ class HTTPClient:
 
         return self.request("GET", endpoint, params=params)
 
-    def fetch_similiar_words(self, word: str) -> list[dict[str, Any]]:
+    @cached_coro
+    def fetch_similiar_words(self, word: str) -> Awaitable[list[dict[str, Any]]]:
         """
         Docs on the endpoint
         https://developer.wordnik.com/docs#!/word/getRelatedWords
@@ -123,12 +134,14 @@ class HTTPClient:
         try:
             limit = int(self.settings["results"])
         except ValueError:
-            opt = Option(
-                title="Error: Invalid Results Value Given.",
-                sub="The Results settings item must be a valid number.",
-                callback="open_settings_menu",
+            raise PluginException(
+                "Invalid Results Value Given",
+                Result.create_with_partial(
+                    self.flow.api.open_settings_menu,
+                    title="Error: Invalid Results Value Given.",
+                    sub="The Results settings item must be a valid number.",
+                ),
             )
-            raise PluginException(opt.title, [opt])
 
         params = {
             "limit": limit,
@@ -137,16 +150,18 @@ class HTTPClient:
 
         return self.request("GET", endpoint, params=params)
 
-    def fetch_word_list_file(self) -> Any:
+    @cached_coro
+    async def fetch_word_list_file(self) -> Any:
         """
         Source: https://github.com/dwyl/english-words
         """
         url = "https://raw.githubusercontent.com/dwyl/english-words/refs/heads/master/words_alpha.txt"
-        res = requests.get(url)
+        res = await self.session.get(url)
         res.raise_for_status()
         return res.content
 
-    def fetch_scrabble_score(self, word: str) -> dict[str, int]:
+    @cached_coro
+    def fetch_scrabble_score(self, word: str) -> Awaitable[dict[str, int]]:
         """
         Docs on the endpoint
         https://developer.wordnik.com/docs#!/word/getScrabbleScore
@@ -154,4 +169,4 @@ class HTTPClient:
 
         endpoint = f"/word.json/{quote_plus(word)}/scrabbleScore"
 
-        return self.request("GET", endpoint, raise_wnf_on_404=False)
+        return self.request("GET", endpoint)

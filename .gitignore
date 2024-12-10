@@ -1,6 +1,6 @@
 __pycache__/*
 venv/*
 lib/*
-wordnik.logs
+*.log
 *.pyc
 WorknikDictionary/word_list.txt
