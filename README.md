@@ -21,7 +21,7 @@ To Install Wordnik Dictionary through Flow's Plugin Manager, run the following c
 
 ## Manual Installation
 > [!WARNING]
-> This method is not recommended, only do this if you know what your doing.
+> This method is not recommended, only do this if you know what you're doing.
 ### Install from a previous release
 
 1. Download the zipped release file.
